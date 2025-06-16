@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,9 +8,22 @@ import 'app/modules/auth/controllers/auth_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
 import 'firebase_options.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Fix: Disable edge-to-edge system UI on Android 15+
+  if (Platform.isAndroid) {
+    final androidVersion = int.parse(
+      Platform.version.split(' ').first.split('.').first,
+    );
+    if (androidVersion >= 15) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top],
+      );
+    }
+  }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -33,6 +48,15 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,
+
+        /// 👇 Add this to wrap every screen in SafeArea automatically
+        builder: (context, child) {
+          return SafeArea(
+            top: true,
+            bottom: true,
+            child: child ?? const SizedBox(),
+          );
+        },
       ),
     );
   }
