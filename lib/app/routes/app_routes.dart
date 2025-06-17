@@ -1,19 +1,18 @@
 abstract class Routes {
   Routes._();
   static const SPLASH = '/splash';
-  static const GET_STARTED = '/get-started';
+  static const ONBOARDING = '/onboarding';
   static const LOGIN = '/login';
 
   // Student Routes
-  static const HOME = '/home'; // Student dashboard
-  static const ATTENDANCE = '/attendance'; // Student attendance details
+  static const HOME = '/home';
+  static const ATTENDANCE = '/attendance';
 
   // Admin Routes
-  static const ADMIN_ATTENDANCE = '/admin-attendance'; // Admin dashboard
+  static const ADMIN_ATTENDANCE = '/admin-attendance';
 
-  // Faculty Routes
   // FACULTY_ATTENDANCE
-  static const FACULTY_ATTENDANCE = '/faculty-attendance'; // Faculty dashboard
+  static const FACULTY_ATTENDANCE = '/faculty-attendance';
 
   // Common Routes
   static const PROFILE = '/profile';

@@ -85,7 +85,7 @@ class FacultyMyAttendanceTab extends StatelessWidget {
                   case 0:
                     return const MonthlyAttendanceCard();
                   case 1:
-                    return const MonthlyAttendanceCard();
+                    return FacultyMyAttendanceLeaveView();
                   default:
                     return Container();
                 }
@@ -97,8 +97,6 @@ class FacultyMyAttendanceTab extends StatelessWidget {
           switch (controller.selectedSubTab.value) {
             case 0:
               return FacultyMyAttendanceOverviewView();
-            case 1:
-              return FacultyMyAttendanceLeaveView();
             default:
               return Container();
           }

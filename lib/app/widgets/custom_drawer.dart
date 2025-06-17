@@ -71,7 +71,10 @@ class CustomDrawer extends GetView<ProfileController> {
               _drawerItem('Syllabus', () {}),
               _drawerItem('Library', () {}),
               _drawerItem('Fees', () {}),
-              _drawerItem('Grades', () {}),
+              _drawerItem(
+                'Grades',
+                () => Get.toNamed(Routes.FACULTY_ATTENDANCE),
+              ),
 
               const Divider(color: Colors.white54, height: 32),
 

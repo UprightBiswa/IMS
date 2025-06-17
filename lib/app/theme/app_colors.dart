@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color primaryBlue = Color(0xFF0061FE);
+  static const Color white = Color(0xFFFFFFFF);
   static const Color sidebarWhite = Color(0xFFFFFFFF);
   static const Color backgroundGray = Color(0xFFF7F9FA);
   static const Color lightGray = Color(0xFFE5E5E5);
+  static const Color grey = Color(0xFF9E9E9E);
 
   static const Color primaryGreen = Color(0xFF4CAF50); // Green for progress
   static const Color primaryOrange = Color(0xFFFF9800); // Orange
@@ -23,21 +25,26 @@ class AppColors {
   static const Color borderGray = Color(0xFF5F5D5D);
   static const Color cardBackground = Color(0xFFF8F9FB);
   static const Color cardBorder = Color(0xFFEDEDED);
+  static const Color darkBlue = Color(0xFF3949AB);
 
-  static const Color bottomBarBlue = Color(0xFF3949AB);
-
-
-  static const Color lightGreyBackground = Color(0xFFF0F2F5); // General light grey background
+  static const Color lightGreyBackground = Color(
+    0xFFF0F2F5,
+  ); // General light grey background
   static const Color darkText = Color(0xFF212121); // Dark text
   static const Color greyText = Color(0xFF757575); // Grey text
-  static const Color lightBlue = Color(0xFFE3F2FD); // For calendar selected circle
-  static const Color accentBlue = Color(0xFF42A5F5); // For calendar selected circle border
+  static const Color lightBlue = Color(
+    0xFFE3F2FD,
+  ); // For calendar selected circle
+  static const Color accentBlue = Color(
+    0xFF42A5F5,
+  ); // For calendar selected circle border
 
   static const Color presentCalendarDot = Color(0xFF66BB6A); // Green dot
   static const Color absentCalendarDot = Color(0xFFEF5350); // Red dot
   static const Color lateCalendarDot = Color(0xFFFFCA28); // Yellow dot
-  static const Color leaveCalendarDot = Color(0xFFAB47BC); // Purple dot (example, adjust if different in image)
-
+  static const Color leaveCalendarDot = Color(
+    0xFFAB47BC,
+  ); // Purple dot (example, adjust if different in image)
 
   static const Color statusPresentGreen = Color(0xFFD4EDDA);
   static const Color statusPresentText = Color(0xFF28A745);

@@ -12,7 +12,8 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Fix: Disable edge-to-edge system UI on Android 15+
+  SystemChrome.setSystemUIOverlayStyle(defaultOverlay);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   if (Platform.isAndroid) {
     final androidVersion = int.parse(
       Platform.version.split(' ').first.split('.').first,
@@ -27,7 +28,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  // Inject AuthController with SharedPreferences
   Get.put<AuthController>(AuthController(prefs));
   runApp(MyApp());
 }
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus(); // Dismiss keyboard on tap
+        FocusScope.of(context).unfocus();
       },
       child: GetMaterialApp(
         title: "Attendance Management System",
@@ -48,8 +48,6 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,
-
-        /// 👇 Add this to wrap every screen in SafeArea automatically
         builder: (context, child) {
           return SafeArea(
             top: true,

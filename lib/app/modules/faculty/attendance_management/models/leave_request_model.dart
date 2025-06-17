@@ -1,12 +1,6 @@
-// lib/app/modules/faculty/attendance_management/models/leave_request_model.dart
-import 'package:flutter/material.dart'; // For IconData if needed
+import 'package:flutter/material.dart';
 
-enum LeaveStatus {
-  Approved,
-  Rejected,
-  Pending,
-  Cancelled // Example: if faculty can cancel
-}
+enum LeaveStatus { Approved, Rejected, Pending, Cancelled }
 
 class LeaveRequest {
   final String id;
@@ -89,34 +83,10 @@ class LeaveRequest {
       ),
     ];
   }
-
-  static List<LeaveRequest> dummyPendingRequests() {
-    return [
-      LeaveRequest(
-        id: 'L004',
-        startDate: DateTime(2025, 6, 25),
-        endDate: DateTime(2025, 6, 27),
-        leaveType: 'Casual Leave',
-        reason: 'Vacation plans',
-        submittedDate: DateTime(2025, 6, 15),
-        status: LeaveStatus.Pending,
-      ),
-      LeaveRequest(
-        id: 'L005',
-        startDate: DateTime(2025, 7, 5),
-        endDate: DateTime(2025, 7, 5),
-        leaveType: 'Personal reasons',
-        reason: 'Appointment',
-        submittedDate: DateTime(2025, 6, 14),
-        status: LeaveStatus.Pending,
-      ),
-    ];
-  }
 }
 
-// Model for Leave Balance
 class LeaveBalance {
-  final String type; // e.g., "Sick Leave", "Casual Leave"
+  final String type;
   final int total;
   final int consumed;
   final int remaining;
@@ -130,9 +100,9 @@ class LeaveBalance {
 
   static List<LeaveBalance> dummyBalances() {
     return [
-      LeaveBalance(type: 'Sick Leave', total: 12, consumed: 8, remaining: 4),
-      LeaveBalance(type: 'Casual Leave', total: 15, consumed: 7, remaining: 8),
-      // Add more as per your leave policies
+      LeaveBalance(type: 'Sick Leave', total: 7, consumed: 5, remaining: 2),
+      LeaveBalance(type: 'Casual Leave', total: 7, consumed: 4, remaining: 3),
+      LeaveBalance(type: 'Earned Leave', total: 18, consumed: 10, remaining: 8),
     ];
   }
 }

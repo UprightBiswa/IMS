@@ -42,7 +42,7 @@ class AuthController extends GetxController {
     final String? accessToken = _prefs.getString(AppConstants.ACCESS_TOKEN_KEY);
 
     if (!hasSeenGetStarted) {
-      Get.offAllNamed(Routes.GET_STARTED);
+      Get.offAllNamed(Routes.ONBOARDING);
       await _prefs.setBool(AppConstants.HAS_SEEN_GET_STARTED_KEY, true);
     } else if (accessToken == null || accessToken.isEmpty) {
       Get.offAllNamed(Routes.LOGIN);

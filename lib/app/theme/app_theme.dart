@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
@@ -38,3 +39,12 @@ class AppTheme {
     ),
   );
 }
+
+SystemUiOverlayStyle defaultOverlay = const SystemUiOverlayStyle(
+  statusBarColor: Colors.white,
+  statusBarBrightness: Brightness.light,
+  statusBarIconBrightness: Brightness.light,
+  systemNavigationBarColor: Colors.white,
+  systemNavigationBarDividerColor: Colors.white,
+  systemNavigationBarIconBrightness: Brightness.light,
+);

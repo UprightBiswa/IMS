@@ -7,9 +7,10 @@ import '../constants/app_constrants.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
 import '../modules/faculty/attendance_management/bindings/faculty_attendance_binding.dart';
 import '../modules/faculty/attendance_management/views/faculty_attendance_page.dart';
+import '../modules/onboarding/bindings/onbording_binding.dart';
+import '../modules/onboarding/views/orboarding_view.dart';
 import '../modules/student/attendance/view/attendance_main_view.dart'; // Ensure correct path
 import '../modules/auth/views/login_view.dart';
-import '../modules/get_started/views/get_started_view.dart';
 import '../modules/help/view/help_view.dart';
 import '../modules/student/home/views/home_view.dart';
 import '../modules/student/home/bindings/home_binding.dart';
@@ -39,7 +40,7 @@ class RouteProtectionMiddleware extends GetMiddleware {
 
     if (token == null || token.isEmpty) {
       if (routeName != Routes.LOGIN &&
-          routeName != Routes.GET_STARTED &&
+          routeName != Routes.ONBOARDING &&
           routeName != Routes.SPLASH) {
         return GetNavConfig.fromRoute(Routes.LOGIN);
       }
@@ -72,7 +73,11 @@ class AppPages {
       page: () => SplashView(),
       binding: SplashBinding(),
     ),
-    GetPage(name: Routes.GET_STARTED, page: () => GetStartedView()),
+     GetPage(
+      name: Routes.ONBOARDING,
+      page: () => const OnboardingView(),
+      binding: OnboardingBinding(),
+    ),
     GetPage(name: Routes.LOGIN, page: () => LoginView()),
 
     // Student Routes
