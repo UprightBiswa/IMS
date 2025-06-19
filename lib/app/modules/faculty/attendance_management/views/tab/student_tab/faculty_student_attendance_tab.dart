@@ -1,7 +1,5 @@
-// lib/app/modules/faculty/attendance_management/views/faculty_student_attendance_tab.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../../theme/app_colors.dart';
 import '../../../../../admin/attendance_management/views/admin_attendance_page.dart';
 import '../../../controllers/faculty_student_attendance_controller.dart';
 import 'faculty_student_attendance_dashboard_view.dart';
@@ -18,6 +16,7 @@ class FacultyStudentAttendanceTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 16,
       children: [
         Container(
           width: double.infinity,
@@ -93,34 +92,6 @@ class FacultyStudentAttendanceTab extends StatelessWidget {
           }
         }),
       ],
-    );
-  }
-
-  Widget _buildStudentSubTabButton({
-    required String label,
-    required int index,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.cardBackground : Colors.transparent,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? AppColors.darkText : AppColors.greyText,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

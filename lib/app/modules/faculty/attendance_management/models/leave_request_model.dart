@@ -10,6 +10,7 @@ class LeaveRequest {
   final String reason;
   final DateTime submittedDate;
   final LeaveStatus status;
+  final String days;
   final String? documentUrl; // Optional: URL to supporting document
 
   LeaveRequest({
@@ -20,6 +21,7 @@ class LeaveRequest {
     required this.reason,
     required this.submittedDate,
     required this.status,
+    required this.days,
     this.documentUrl,
   });
 
@@ -52,7 +54,7 @@ class LeaveRequest {
   }
 
   // Dummy data factories
-  static List<LeaveRequest> dummyLeaveHistory() {
+  static List<LeaveRequest> dummyRecentLeaveApplications() {
     return [
       LeaveRequest(
         id: 'L001',
@@ -61,6 +63,7 @@ class LeaveRequest {
         leaveType: 'Medical emergency',
         reason: 'Acute fever',
         submittedDate: DateTime(2025, 4, 8),
+        days: '3',
         status: LeaveStatus.Approved,
       ),
       LeaveRequest(
@@ -71,6 +74,8 @@ class LeaveRequest {
         reason: 'Family event',
         submittedDate: DateTime(2025, 3, 18),
         status: LeaveStatus.Rejected,
+        days: '1',
+
       ),
       LeaveRequest(
         id: 'L003',
@@ -79,7 +84,9 @@ class LeaveRequest {
         leaveType: 'Sick Leave',
         reason: 'Flu symptoms',
         submittedDate: DateTime(2025, 1, 30),
+
         status: LeaveStatus.Approved,
+        days: '2',
       ),
     ];
   }

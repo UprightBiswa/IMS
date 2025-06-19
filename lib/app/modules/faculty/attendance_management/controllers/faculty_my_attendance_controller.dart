@@ -13,7 +13,7 @@ class FacultyMyAttendanceController extends GetxController {
   final RxList<RecentActivity> recentActivities = <RecentActivity>[].obs;
   // Leave Management Data
   final RxList<LeaveBalance> leaveBalances = <LeaveBalance>[].obs;
-  final RxList<LeaveRequest> leaveHistory = <LeaveRequest>[].obs;
+  final RxList<LeaveRequest> leaveApplications = <LeaveRequest>[].obs;
 
   // For Apply Leave Form
   final Rx<DateTime?> selectedLeaveStartDate = Rx<DateTime?>(null);
@@ -39,7 +39,7 @@ class FacultyMyAttendanceController extends GetxController {
     recentActivities.value = RecentActivity.dummyList();
     // Load dummy leave data
     leaveBalances.value = LeaveBalance.dummyBalances();
-    leaveHistory.value = LeaveRequest.dummyLeaveHistory();
+    leaveApplications.value = LeaveRequest.dummyRecentLeaveApplications();
   }
 
   void changeSubTab(int index) {
@@ -89,7 +89,7 @@ class FacultyMyAttendanceController extends GetxController {
 
   void _generateDummyCalendarData() {
     final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    // final firstDayOfMonth = DateTime(now.year, now.month, 1);
     final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
 
     for (int i = 1; i <= lastDayOfMonth.day; i++) {

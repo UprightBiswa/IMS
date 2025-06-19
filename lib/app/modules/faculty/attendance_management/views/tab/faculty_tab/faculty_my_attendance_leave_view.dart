@@ -48,9 +48,9 @@ class FacultyMyAttendanceLeaveView extends StatelessWidget {
               const SizedBox(height: 16),
               Obx(() {
                 return Column(
-                  children: controller.leaveHistory.isEmpty
-                      ? [const Text('No leave history available.')]
-                      : controller.leaveHistory
+                  children: controller.leaveApplications.isEmpty
+                      ? [const Text('No leave Applications available.')]
+                      : controller.leaveApplications
                             .map(
                               (request) => LeaveRequestCard(request: request),
                             )
@@ -78,34 +78,6 @@ class FacultyMyAttendanceLeaveView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLeaveSubTabButton({
-    required String label,
-    required int index,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.cardBackground : Colors.transparent,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? AppColors.darkText : AppColors.greyText,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

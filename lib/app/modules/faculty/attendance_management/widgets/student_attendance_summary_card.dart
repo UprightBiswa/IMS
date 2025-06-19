@@ -1,4 +1,3 @@
-// lib/app/modules/faculty/attendance_management/views/widgets/overall_attendance_summary_card.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,142 +13,133 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
 
     return Obx(() {
       final summary = controller.overallSummary.value;
-      return Card(
-        elevation: 1.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Student Attendance',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.darkText,
-                ),
-              ),
-              Text(
-                'Monitor and manage your students\' attendance',
-                style: TextStyle(fontSize: 12, color: AppColors.greyText),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoSquare(
-                      icon: Icons.group_outlined,
-                      label: 'Total Students',
-                      value: '${summary.totalStudents}',
-                      subtext: 'Across 12 classes',
-                      iconColor: AppColors.primaryBlue,
-                      bgColor: AppColors.lightBlue,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildInfoSquare(
-                      icon: Icons.check_circle_outline,
-                      label: 'Today\'s Attendance',
-                      value: '${summary.presentToday * 100 ~/ summary.totalStudents}%', // Assuming presentToday is actual count
-                      subtext: '${summary.presentToday} present',
-                      iconColor: AppColors.primaryGreen,
-                      bgColor: AppColors.primaryGreen.withOpacity(0.1),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoSquare(
-                      icon: Icons.person_off_outlined,
-                      label: 'Absent Students',
-                      value: '${summary.absentStudents}',
-                      subtext: '${(summary.absentStudents * 100 / summary.totalStudents).toStringAsFixed(0)}% of total',
-                      iconColor: AppColors.primaryRed,
-                      bgColor: AppColors.primaryRed.withOpacity(0.1),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildInfoSquare(
-                      icon: Icons.trending_up_outlined,
-                      label: 'Weekly Attendance',
-                      value: '${summary.weeklyAttendanceRate}%',
-                      subtext: 'Up 1.3%', // Dummy for now
-                      iconColor: AppColors.primaryOrange,
-                      bgColor: AppColors.primaryOrange.withOpacity(0.1),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Students Who < 75% attendance',
-                        style: TextStyle(fontSize: 13, color: AppColors.darkText),
-                      ),
-                      Text(
-                        '${summary.belowThresholdStudents} Students',
-                        style: TextStyle(fontSize: 13, color: AppColors.primaryRed, fontWeight: FontWeight.bold),
-                      ),
-                    ],
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F9FA),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(width: 1.6, color: const Color(0xFFEAEBEE)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Overall Attendance',
+              style: TextStyle(fontSize: 12, color: AppColors.darkText),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildInfoSquare(
+                    label: 'present',
+                    value:
+                        '${summary.presentToday * 100 ~/ summary.totalStudents}%',
+                    iconColor: AppColors.accentGreen,
                   ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildInfoSquare(
+                    label: 'Absent',
+                    value:
+                        '${summary.absentStudents * 100 ~/ summary.totalStudents}%', // Assuming presentToday is actual count
+                    iconColor: AppColors.accentRed,
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: _buildInfoSquare(
+                    label: 'late',
+                    value:
+                        '${summary.lateStudent * 100 ~/ summary.totalStudents}%', // Assuming presentToday is actual count
+
+                    iconColor: AppColors.accentYellow,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Students Who < 75% attendance',
+                  style: TextStyle(fontSize: 10, color: AppColors.darkText),
+                ),
+                Text(
+                  '${summary.belowThresholdStudents} Students',
+                  style: TextStyle(fontSize: 10, color: AppColors.primaryRed),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            /// show line pregeress bar black cor
+            LinearProgressIndicator(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              value: summary.belowThresholdStudents / summary.totalStudents,
+            ),
+            const SizedBox(height: 16),
+
+            //show total stuent
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total Students',
+                  style: TextStyle(fontSize: 12, color: AppColors.darkText),
+                ),
+                Text(
+                  '${summary.totalStudents}',
+                  style: TextStyle(fontSize: 12, color: AppColors.darkText),
+                ),
+              ],
+            ),
+          ],
         ),
       );
     });
   }
 
   Widget _buildInfoSquare({
-    required IconData icon,
     required String label,
     required String value,
-    required String subtext,
     required Color iconColor,
-    required Color bgColor,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 28, color: iconColor),
-          const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: AppColors.greyText),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkText,
-            ),
-          ),
-          Text(
-            subtext,
             style: TextStyle(fontSize: 10, color: AppColors.greyText),
+          ),
+          Row(
+            children: [
+              //dot color
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: iconColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                value,
+                style: TextStyle(fontSize: 12, color: AppColors.darkText),
+              ),
+            ],
           ),
         ],
       ),

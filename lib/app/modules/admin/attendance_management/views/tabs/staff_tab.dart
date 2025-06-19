@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../../theme/app_colors.dart';
+import '../../controllers/admin_attendance_controller.dart';
+import '../../models/staff_over_view_model.dart';
 import '../../widgets/analytics_pill_widget.dart';
 
 class StaffTab extends StatelessWidget {
@@ -8,40 +11,21 @@ class StaffTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> staffOverviewData = [
-      {
-        "STAFF NAME": "Anaya Varma",
-        "DEPARTMENT": "Library",
-        "DESIGNATION": "Office Superintendent",
-        "COMPLIANCE": "98%",
-        "STATUS": "Present",
-      },
-      {
-        "STAFF NAME": "Rohan Mehta",
-        "DEPARTMENT": "Administration",
-        "DESIGNATION": "Senior Librarian",
-        "COMPLIANCE": "100%",
-        "STATUS": "Present",
-      },
-      {
-        "STAFF NAME": "Kavita Nair",
-        "DEPARTMENT": "Finance",
-        "DESIGNATION": "Accountant",
-        "COMPLIANCE": "95%",
-        "STATUS": "Absent",
-      },
-      {
-        "STAFF NAME": "Vikram Joshi",
-        "DEPARTMENT": "IT Support",
-        "DESIGNATION": "System Administrator",
-        "COMPLIANCE": "78%",
-        "STATUS": "Waiting",
-      },
-    ];
+    final AttendanceDashboardController controller = Get.find();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildStaffOverview(staffOverviewData),
+        Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (controller.errorMessage.isNotEmpty) {
+            return Center(child: Text(controller.errorMessage.value));
+          } else if (controller.staffData.isEmpty) {
+            return const Center(child: Text('No staff data found.'));
+          }
+          return _buildStaffOverview(controller.staffData);
+        }),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -123,7 +107,7 @@ class StaffTab extends StatelessWidget {
     );
   }
 
-  Widget _buildStaffOverview(List<Map<String, dynamic>> data) {
+  Widget _buildStaffOverview(List<StaffOverviewModel> data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -270,14 +254,14 @@ class StaffTab extends StatelessWidget {
                   3: FlexColumnWidth(1.5),
                   4: FlexColumnWidth(1.5),
                 },
-                children: data.map((row) {
+                children: data.map((staff) {
                   return TableRow(
                     children: [
-                      _buildTableCell(row['STAFF NAME'].toString()),
-                      _buildTableCell(row['DEPARTMENT'].toString()),
-                      _buildTableCell(row['DESIGNATION'].toString()),
-                      _buildTableCell(row['COMPLIANCE'].toString()),
-                      _buildStaffStatusTableCell(row['STATUS'].toString()),
+                      _buildTableCell(staff.staffName.toString()),
+                      _buildTableCell(staff.department.toString()),
+                      _buildTableCell(staff.designation.toString()),
+                      _buildTableCell(staff.compliancePercentage.toString()),
+                      _buildStaffStatusTableCell(staff.status.toString()),
                     ],
                   );
                 }).toList(),
@@ -369,5 +353,4 @@ class StaffTab extends StatelessWidget {
       ),
     );
   }
-
 }

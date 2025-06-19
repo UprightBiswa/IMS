@@ -8,7 +8,10 @@ class ApiEndpoints {
   static const String STUDENT_LEAVE_REQUEST = '/student/leave-request';
 
   // Example admin endpoints
-  static const String ADMIN_STUDENTS = '/admin/students';
-  static const String ADMIN_FACULTY = '/admin/faculty';
-  static const String ADMIN_ATTENDANCE_RECORDS = '/admin/attendance-records';
+  static const String ADMIN_DASHBOARD_STUDENT_MAPP =
+      '/api/v1/attendance/dashboard/admin/students_mapp';
+  static const String ADMIN_DASHBOARD_FACULTY_MAPP =
+      '/api/v1/attendance/dashboard/admin/faculty_mapp';
+  static const String ADMIN_DASHBOARD_STAFF_MAPP =
+      '/api/v1/attendance/dashboard/admin/staff_mapp';
 }

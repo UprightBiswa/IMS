@@ -4,6 +4,7 @@ class OverallStudentAttendanceSummary {
   final int totalStudents;
   final int presentToday;
   final int absentStudents;
+  final int lateStudent;
   final double weeklyAttendanceRate;
   final int belowThresholdStudents; // For "Students Who < 75% attendance"
 
@@ -11,6 +12,8 @@ class OverallStudentAttendanceSummary {
     required this.totalStudents,
     required this.presentToday,
     required this.absentStudents,
+    required this.lateStudent,
+
     required this.weeklyAttendanceRate,
     required this.belowThresholdStudents,
   });
@@ -20,6 +23,7 @@ class OverallStudentAttendanceSummary {
       totalStudents: 1245,
       presentToday: 1142,
       absentStudents: 100, // For "8% of total"
+      lateStudent: 3,
       weeklyAttendanceRate: 98.3,
       belowThresholdStudents: 12, // Corresponds to "12 Students" in UI
     );
@@ -45,29 +49,33 @@ class ClassAttendanceSnapshot {
   static List<ClassAttendanceSnapshot> dummyList() {
     return [
       ClassAttendanceSnapshot(
-          className: 'B.Sc Physics 2nd Year',
-          section: 'Section A',
-          attendancePercentage: 87.2,
-          studentsPresent: 5,
-          totalStudents: 38),
+        className: 'B.Sc Physics 2nd Year',
+        section: 'Section A',
+        attendancePercentage: 87.2,
+        studentsPresent: 5,
+        totalStudents: 38,
+      ),
       ClassAttendanceSnapshot(
-          className: 'B.Com 2B',
-          section: 'Section B',
-          attendancePercentage: 78.1,
-          studentsPresent: 9,
-          totalStudents: 47),
+        className: 'B.Com 2B',
+        section: 'Section B',
+        attendancePercentage: 78.1,
+        studentsPresent: 9,
+        totalStudents: 47,
+      ),
       ClassAttendanceSnapshot(
-          className: 'B.Tech 3C',
-          section: 'Section C',
-          attendancePercentage: 90.7,
-          studentsPresent: 2,
-          totalStudents: 39),
+        className: 'B.Tech 3C',
+        section: 'Section C',
+        attendancePercentage: 90.7,
+        studentsPresent: 2,
+        totalStudents: 39,
+      ),
       ClassAttendanceSnapshot(
-          className: 'BBA 2A',
-          section: 'Section A',
-          attendancePercentage: 72.8,
-          studentsPresent: 14,
-          totalStudents: 42),
+        className: 'BBA 2A',
+        section: 'Section A',
+        attendancePercentage: 72.8,
+        studentsPresent: 14,
+        totalStudents: 42,
+      ),
     ];
   }
 }
@@ -92,7 +100,6 @@ class RecentClass {
     required this.totalStudents,
   });
 
-  int get unmarkedCount => totalStudents - (presentCount + absentCount + lateCount);
 
   static List<RecentClass> dummyList() {
     return [
@@ -132,7 +139,8 @@ class StudentAttendanceMark {
   final String id;
   final String rollNo;
   final String name;
-  Rx<String> status; // "Present", "Absent", "Late", "Leave" or initially "Unmarked"
+  Rx<String>
+  status; // "Present", "Absent", "Late", "Leave" or initially "Unmarked"
 
   StudentAttendanceMark({
     required this.id,
@@ -143,13 +151,48 @@ class StudentAttendanceMark {
 
   static List<StudentAttendanceMark> dummyList() {
     return [
-      StudentAttendanceMark(id: 'S001', rollNo: '801', name: 'Anjal Sharma', initialStatus: 'Present'),
-      StudentAttendanceMark(id: 'S002', rollNo: '802', name: 'Rohit Mehta', initialStatus: 'Absent'),
-      StudentAttendanceMark(id: 'S003', rollNo: '803', name: 'Priya Deshmukh', initialStatus: 'Present'),
-      StudentAttendanceMark(id: 'S004', rollNo: '804', name: 'Vikram Singh', initialStatus: 'Present'),
-      StudentAttendanceMark(id: 'S05', rollNo: '805', name: 'Nisha Patel', initialStatus: 'Late'),
-      StudentAttendanceMark(id: 'S06', rollNo: '806', name: 'Arjun Kumar', initialStatus: 'Absent'),
-      StudentAttendanceMark(id: 'S07', rollNo: '807', name: 'Sneha Gupta', initialStatus: 'Present'),
+      StudentAttendanceMark(
+        id: 'S001',
+        rollNo: '801',
+        name: 'Anjal Sharma',
+        initialStatus: 'Present',
+      ),
+      StudentAttendanceMark(
+        id: 'S002',
+        rollNo: '802',
+        name: 'Rohit Mehta',
+        initialStatus: 'Absent',
+      ),
+      StudentAttendanceMark(
+        id: 'S003',
+        rollNo: '803',
+        name: 'Priya Deshmukh',
+        initialStatus: 'Present',
+      ),
+      StudentAttendanceMark(
+        id: 'S004',
+        rollNo: '804',
+        name: 'Vikram Singh',
+        initialStatus: 'Present',
+      ),
+      StudentAttendanceMark(
+        id: 'S05',
+        rollNo: '805',
+        name: 'Nisha Patel',
+        initialStatus: 'Late',
+      ),
+      StudentAttendanceMark(
+        id: 'S06',
+        rollNo: '806',
+        name: 'Arjun Kumar',
+        initialStatus: 'Absent',
+      ),
+      StudentAttendanceMark(
+        id: 'S07',
+        rollNo: '807',
+        name: 'Sneha Gupta',
+        initialStatus: 'Present',
+      ),
     ];
   }
 }
@@ -174,13 +217,62 @@ class StudentRecord {
 
   static List<StudentRecord> dummyList() {
     return [
-      StudentRecord(rollNo: '801', name: 'Anjali Sharma', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Present'),
-      StudentRecord(rollNo: '802', name: 'Rohit Mehta', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Absent'),
-      StudentRecord(rollNo: '803', name: 'Priya Deshmukh', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Present'),
-      StudentRecord(rollNo: '804', name: 'Vikram Singh', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Late'),
-      StudentRecord(rollNo: '805', name: 'Nisha Patel', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Present'),
-      StudentRecord(rollNo: '806', name: 'Arjun', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Absent'),
-      StudentRecord(rollNo: '807', name: 'Sneha', section: 'A', subject: 'Mechanics', date: DateTime(2025, 3, 27), status: 'Present'),
+      StudentRecord(
+        rollNo: '801',
+        name: 'Anjali Sharma',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Present',
+      ),
+      StudentRecord(
+        rollNo: '802',
+        name: 'Rohit Mehta',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Absent',
+      ),
+      StudentRecord(
+        rollNo: '803',
+        name: 'Priya Deshmukh',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Present',
+      ),
+      StudentRecord(
+        rollNo: '804',
+        name: 'Vikram Singh',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Late',
+      ),
+      StudentRecord(
+        rollNo: '805',
+        name: 'Nisha Patel',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Present',
+      ),
+      StudentRecord(
+        rollNo: '806',
+        name: 'Arjun',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Absent',
+      ),
+      StudentRecord(
+        rollNo: '807',
+        name: 'Sneha',
+        section: 'A',
+        subject: 'Mechanics',
+        date: DateTime(2025, 3, 27),
+        status: 'Present',
+      ),
     ];
   }
 }

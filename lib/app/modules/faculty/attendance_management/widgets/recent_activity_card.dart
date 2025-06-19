@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../theme/app_colors.dart';
 import '../controllers/faculty_my_attendance_controller.dart';
@@ -85,33 +86,49 @@ class RecentActivityCard extends StatelessWidget {
         spacing: 16,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Recent Activity',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.darkText,
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FB),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: const Color(0xFFF3F4F5)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recent Activity',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.darkText,
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  print('View All Recent Activity tapped');
-                },
-                child: Text(
-                  'View All',
-                  style: TextStyle(fontSize: 14, color: AppColors.primaryBlue),
+                GestureDetector(
+                  onTap: () {
+                    print('View All Recent Activity tapped');
+                  },
+                  child: Text(
+                    'View All',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Obx(() {
-            return ListView.builder(
+            return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.recentActivities.length,
+              separatorBuilder: (_, _) => const Divider(
+                color: AppColors.lightGray,
+                height: 0,
+                thickness: 0,
+              ),
               itemBuilder: (context, index) {
                 final activity = controller.recentActivities[index];
                 return Padding(
@@ -130,15 +147,14 @@ class RecentActivityCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${activity.date.day} ${activity.dayOfWeek} ${activity.date.year}',
+                              DateFormat('dd MMM, yyyy').format(activity.date),
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w400,
                                 color: AppColors.darkText,
                               ),
                             ),
                             Text(
-                              activity.title,
+                              activity.dayOfWeek,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.greyText,

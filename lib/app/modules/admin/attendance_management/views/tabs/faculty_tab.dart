@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../../theme/app_colors.dart';
+import '../../controllers/admin_attendance_controller.dart';
+import '../../models/faculty_overview_model.dart';
 import '../../widgets/analytics_pill_widget.dart';
 
 class FacultyTab extends StatelessWidget {
@@ -8,40 +11,21 @@ class FacultyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> facultyOverviewData = [
-      {
-        "FACULTY NAME": "Dr. Meena Rao",
-        "DEPARTMENT": "Physics",
-        "CLASS ASSIGNED": 4,
-        "CLASSES MARKED": 4,
-        "STATUS": 1,
-      },
-      {
-        "FACULTY NAME": "Mr. Sanjay Jain",
-        "DEPARTMENT": "Chemistry",
-        "CLASS ASSIGNED": 4,
-        "CLASSES MARKED": 2,
-        "STATUS": 0,
-      },
-      {
-        "FACULTY NAME": "Dr. Priya Singh",
-        "DEPARTMENT": "Computer Science",
-        "CLASS ASSIGNED": 3,
-        "CLASSES MARKED": 3,
-        "STATUS": 1,
-      },
-      {
-        "FACULTY NAME": "Dr. Ankit Kumar",
-        "DEPARTMENT": "Business Administration",
-        "CLASS ASSIGNED": 4,
-        "CLASSES MARKED": 3,
-        "STATUS": 2,
-      },
-    ];
+    final AttendanceDashboardController controller = Get.find();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFacultyOverview(facultyOverviewData),
+        Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (controller.errorMessage.isNotEmpty) {
+            return Center(child: Text(controller.errorMessage.value));
+          } else if (controller.facultyData.isEmpty) {
+            return const Center(child: Text("No faculty data available."));
+          }
+
+          return _buildFacultyOverview(controller.facultyData);
+        }),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -123,7 +107,7 @@ class FacultyTab extends StatelessWidget {
     );
   }
 
-  Widget _buildFacultyOverview(List<Map<String, dynamic>> data) {
+  Widget _buildFacultyOverview(List<FacultyOverviewModel> data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -270,14 +254,14 @@ class FacultyTab extends StatelessWidget {
                   3: FlexColumnWidth(1.5),
                   4: FlexColumnWidth(1.5),
                 },
-                children: data.map((row) {
+                children: data.map((faculty) {
                   return TableRow(
                     children: [
-                      _buildTableCell(row['FACULTY NAME'].toString()),
-                      _buildTableCell(row['DEPARTMENT'].toString()),
-                      _buildTableCell(row['CLASS ASSIGNED'].toString()),
-                      _buildTableCell(row['CLASSES MARKED'].toString()),
-                      _buildStatusTableCell(row['STATUS']),
+                      _buildTableCell(faculty.facultyName),
+                      _buildTableCell(faculty.department),
+                      _buildTableCell(faculty.classesAssigned.toString()),
+                      _buildTableCell(faculty.classesMarked.toString()),
+                      _buildStatusStyledCell(faculty.status),
                     ],
                   );
                 }).toList(),
@@ -300,32 +284,19 @@ class FacultyTab extends StatelessWidget {
     );
   }
 
-  // Custom cell for status (Student Class, Faculty Overview)
-  static Widget _buildStatusTableCell(int statusIndex) {
-    Color bgColor;
-    Color textColor;
-    String text;
+  static Widget _buildStatusStyledCell(String status) {
+    Color bgColor = Colors.grey.withValues(alpha: 0.1);
+    Color textColor = Colors.black87;
 
-    switch (statusIndex) {
-      case 0: // Orange for low attendance/pending
-        bgColor = AppColors.accentYellow.withValues(alpha: .1);
-        textColor = AppColors.accentYellow;
-        text = '~70%'; // Example
-        break;
-      case 1: // Green for good attendance
-        bgColor = AppColors.accentGreen.withValues(alpha: .1);
-        textColor = AppColors.accentGreen;
-        text = '>75%'; // Example
-        break;
-      case 2: // Red for very low attendance
-        bgColor = AppColors.accentRed.withValues(alpha: .1);
-        textColor = AppColors.accentRed;
-        text = '<75%'; // Example
-        break;
-      default:
-        bgColor = Colors.grey.withValues(alpha: .1);
-        textColor = Colors.grey;
-        text = 'N/A';
+    if (status.contains("> 85")) {
+      bgColor = AppColors.accentGreen.withValues(alpha: 0.1);
+      textColor = AppColors.accentGreen;
+    } else if (status.contains("75-84")) {
+      bgColor = AppColors.accentYellow.withValues(alpha: 0.1);
+      textColor = AppColors.accentYellow;
+    } else if (status.contains("< 75")) {
+      bgColor = AppColors.accentRed.withValues(alpha: 0.1);
+      textColor = AppColors.accentRed;
     }
 
     return Padding(
@@ -339,7 +310,7 @@ class FacultyTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            text,
+            status,
             style: TextStyle(
               fontSize: 9,
               color: textColor,
