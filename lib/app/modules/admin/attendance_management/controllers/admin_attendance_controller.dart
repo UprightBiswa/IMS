@@ -5,6 +5,7 @@ import '../../../../constants/api_endpoints.dart';
 import '../../../../services/api_service.dart';
 import '../models/faculty_overview_model.dart';
 import '../models/staff_over_view_model.dart';
+import '../models/student_class_snap_shot_model.dart';
 import '../models/summary_card_model.dart';
 
 class AttendanceDashboardController extends GetxController {
@@ -12,6 +13,10 @@ class AttendanceDashboardController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
+  final RxList<StudentClassSnapshotModel> studentClassSnapshot =
+      <StudentClassSnapshotModel>[].obs;
+
+  final RxList<SummaryCardModel> studentSummaryCards = <SummaryCardModel>[].obs;
 
   final RxList<SummaryCardModel> facultySummaryCards = <SummaryCardModel>[].obs;
   final RxList<SummaryCardModel> staffSummaryCards = <SummaryCardModel>[].obs;
@@ -25,8 +30,64 @@ class AttendanceDashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    fetchStudentOverview();
     fetchFacultyOverview();
     fetchStaffOverview();
+  }
+
+  Future<void> fetchStudentOverview() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final response = await ApiService().get(
+        ApiEndpoints.ADMIN_DASHBOARD_STUDENT_MAPP,
+      );
+      final data = response.data['data']['student_data'];
+
+      // Parse class snapshot list
+      final List snapshotList = data['class_attendance_snapshot'];
+      studentClassSnapshot.value = snapshotList
+          .map((e) => StudentClassSnapshotModel.fromJson(e))
+          .toList();
+
+      // Summary cards
+      final summary = data['summary'];
+      studentSummaryCards.value = [
+        SummaryCardModel(
+          title: "Total Students",
+          value: summary['total_students'].toString(),
+          subtitle: "Across ${summary['total_classes']} classes",
+          icon: Icons.people_alt_outlined,
+          backgroundColor: const Color(0xFFF6FAFE),
+        ),
+        SummaryCardModel(
+          title: "Today's Attendance",
+          value: "${summary['total_attendance_today_percentage']}%",
+          subtitle: "${summary['total_students_present_today']} present",
+          icon: Icons.calendar_today_outlined,
+          backgroundColor: const Color(0xFFF7FDF9),
+        ),
+        SummaryCardModel(
+          title: "Absent Students",
+          value: summary['absent_students_today'].toString(),
+          subtitle: "${summary['absent_students_today_percentage']}% of total",
+          icon: Icons.person_off_outlined,
+          backgroundColor: const Color(0xFFFEF8F8),
+        ),
+        SummaryCardModel(
+          title: "Weekly Attendance",
+          value: "${summary['weekly_attendance_percentage']}%",
+          subtitle: "",
+          icon: Icons.favorite_outline,
+          backgroundColor: const Color(0xFFF6F8FE),
+          progressValue: summary['weekly_attendance_percentage'] / 100,
+        ),
+      ];
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> fetchFacultyOverview() async {
@@ -139,37 +200,37 @@ class AttendanceDashboardController extends GetxController {
     }
   }
 
-  final List<SummaryCardModel> studentSummaryCards = [
-    SummaryCardModel(
-      title: "Total Students",
-      value: "1,245",
-      subtitle: "Across 10 classes",
-      icon: Icons.people_alt_outlined,
-      backgroundColor: const Color(0xFFF6FAFE),
-    ),
-    SummaryCardModel(
-      title: "Today's Attendance",
-      value: "92%",
-      subtitle: "1,145 present",
-      icon: Icons.calendar_today_outlined,
-      backgroundColor: const Color(0xFFF7FDF9),
-    ),
-    SummaryCardModel(
-      title: "Absent Students",
-      value: "100",
-      subtitle: "8% of total",
-      icon: Icons.person_off_outlined,
-      backgroundColor: const Color(0xFFFEF8F8),
-    ),
-    SummaryCardModel(
-      title: "Weekly Attendance",
-      value: "95 %",
-      subtitle: "",
-      icon: Icons.favorite_outline,
-      backgroundColor: const Color(0xFFF6F8FE),
-      progressValue: 0.95,
-    ),
-  ];
+  // final List<SummaryCardModel> studentSummaryCards = [
+  //   SummaryCardModel(
+  //     title: "Total Students",
+  //     value: "1,245",
+  //     subtitle: "Across 10 classes",
+  //     icon: Icons.people_alt_outlined,
+  //     backgroundColor: const Color(0xFFF6FAFE),
+  //   ),
+  //   SummaryCardModel(
+  //     title: "Today's Attendance",
+  //     value: "92%",
+  //     subtitle: "1,145 present",
+  //     icon: Icons.calendar_today_outlined,
+  //     backgroundColor: const Color(0xFFF7FDF9),
+  //   ),
+  //   SummaryCardModel(
+  //     title: "Absent Students",
+  //     value: "100",
+  //     subtitle: "8% of total",
+  //     icon: Icons.person_off_outlined,
+  //     backgroundColor: const Color(0xFFFEF8F8),
+  //   ),
+  //   SummaryCardModel(
+  //     title: "Weekly Attendance",
+  //     value: "95 %",
+  //     subtitle: "",
+  //     icon: Icons.favorite_outline,
+  //     backgroundColor: const Color(0xFFF6F8FE),
+  //     progressValue: 0.95,
+  //   ),
+  // ];
 
   // final List<SummaryCardModel> facultySummaryCards = [
   //   SummaryCardModel(

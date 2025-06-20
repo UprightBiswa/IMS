@@ -1,5 +1,8 @@
+import 'package:attendance_demo/app/modules/admin/attendance_management/models/student_class_snap_shot_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../../theme/app_colors.dart';
+import '../../controllers/admin_attendance_controller.dart';
 import '../../widgets/trend_analysis_chart.dart';
 
 class StudentTab extends StatelessWidget {
@@ -7,40 +10,51 @@ class StudentTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> studentClassData = [
-      {
-        "CLASS": "B.Sc. 1A",
-        "AVG. ATTENDANCE": "82%",
-        "STUDENTS ABSENT": 5,
-        "TOTAL STUDENTS": 38,
-        "STATUS": 0,
-      }, // 0: orange
-      {
-        "CLASS": "B.Com. 2B",
-        "AVG. ATTENDANCE": "78%",
-        "STUDENTS ABSENT": 9,
-        "TOTAL STUDENTS": 47,
-        "STATUS": 1,
-      }, // 1: green
-      {
-        "CLASS": "B.Tech. 3C",
-        "AVG. ATTENDANCE": "88%",
-        "STUDENTS ABSENT": 2,
-        "TOTAL STUDENTS": 39,
-        "STATUS": 1,
-      },
-      {
-        "CLASS": "BBA 2A",
-        "AVG. ATTENDANCE": "59%",
-        "STUDENTS ABSENT": 14,
-        "TOTAL STUDENTS": 42,
-        "STATUS": 2,
-      }, // 2: red
-    ];
+    final AttendanceDashboardController controller = Get.find();
+    // final List<Map<String, dynamic>> studentClassData = [
+    //   {
+    //     "CLASS": "B.Sc. 1A",
+    //     "AVG. ATTENDANCE": "82%",
+    //     "STUDENTS ABSENT": 5,
+    //     "TOTAL STUDENTS": 38,
+    //     "STATUS": 0,
+    //   }, // 0: orange
+    //   {
+    //     "CLASS": "B.Com. 2B",
+    //     "AVG. ATTENDANCE": "78%",
+    //     "STUDENTS ABSENT": 9,
+    //     "TOTAL STUDENTS": 47,
+    //     "STATUS": 1,
+    //   }, // 1: green
+    //   {
+    //     "CLASS": "B.Tech. 3C",
+    //     "AVG. ATTENDANCE": "88%",
+    //     "STUDENTS ABSENT": 2,
+    //     "TOTAL STUDENTS": 39,
+    //     "STATUS": 1,
+    //   },
+    //   {
+    //     "CLASS": "BBA 2A",
+    //     "AVG. ATTENDANCE": "59%",
+    //     "STUDENTS ABSENT": 14,
+    //     "TOTAL STUDENTS": 42,
+    //     "STATUS": 2,
+    //   }, // 2: red
+    // ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildClassAttendanceSnapshot(studentClassData),
+        Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (controller.errorMessage.isNotEmpty) {
+            return Center(child: Text(controller.errorMessage.value));
+          } else if (controller.studentClassSnapshot.isEmpty) {
+            return const Center(child: Text("No faculty data available."));
+          }
+
+          return _buildClassAttendanceSnapshot(controller.studentClassSnapshot);
+        }),
         const SizedBox(height: 16),
         _buildAttendanceAlerts(),
         const SizedBox(height: 16),
@@ -49,7 +63,7 @@ class StudentTab extends StatelessWidget {
     );
   }
 
-  Widget _buildClassAttendanceSnapshot(List<Map<String, dynamic>> data) {
+  Widget _buildClassAttendanceSnapshot(List<StudentClassSnapshotModel> data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,14 +209,14 @@ class StudentTab extends StatelessWidget {
                   3: FlexColumnWidth(1.5),
                   4: FlexColumnWidth(1.5),
                 },
-                children: data.map((row) {
+                children: data.map((student) {
                   return TableRow(
                     children: [
-                      _buildTableCell(row['CLASS'].toString()),
-                      _buildTableCell(row['AVG. ATTENDANCE'].toString()),
-                      _buildTableCell(row['STUDENTS ABSENT'].toString()),
-                      _buildTableCell(row['TOTAL STUDENTS'].toString()),
-                      _buildStatusTableCell(row['STATUS']),
+                      _buildTableCell(student.className.toString()),
+                      _buildTableCell(student.avgAttendance.toString()),
+                      _buildTableCell(student.studentsBelow75.toString()),
+                      _buildTableCell(student.totalStudents.toString()),
+                      _buildStatusTableCell(student.status),
                     ],
                   );
                 }).toList(),
@@ -326,31 +340,19 @@ class StudentTab extends StatelessWidget {
   }
 
   // Custom cell for status (Student Class, Faculty Overview)
-  static Widget _buildStatusTableCell(int statusIndex) {
-    Color bgColor;
-    Color textColor;
-    String text;
+  static Widget _buildStatusTableCell(String status) {
+    Color bgColor = Colors.grey.withValues(alpha: .1);
+    Color textColor = Colors.black87;
 
-    switch (statusIndex) {
-      case 0: // Orange for low attendance/pending
-        bgColor = AppColors.accentYellow.withValues(alpha: .1);
-        textColor = AppColors.accentYellow;
-        text = '~70%'; // Example
-        break;
-      case 1: // Green for good attendance
-        bgColor = AppColors.accentGreen.withValues(alpha: .1);
-        textColor = AppColors.accentGreen;
-        text = '>75%'; // Example
-        break;
-      case 2: // Red for very low attendance
-        bgColor = AppColors.accentRed.withValues(alpha: .1);
-        textColor = AppColors.accentRed;
-        text = '<75%'; // Example
-        break;
-      default:
-        bgColor = Colors.grey.withValues(alpha: .1);
-        textColor = Colors.grey;
-        text = 'N/A';
+    if (status.contains("> 85")) {
+      bgColor = AppColors.accentGreen.withValues(alpha: .1);
+      textColor = AppColors.accentGreen;
+    } else if (status.contains("75-84")) {
+      bgColor = AppColors.accentYellow.withValues(alpha: .1);
+      textColor = AppColors.accentYellow;
+    } else if (status.contains("< 75")) {
+      bgColor = AppColors.accentRed.withValues(alpha: .1);
+      textColor = AppColors.accentRed;
     }
 
     return Padding(
@@ -364,7 +366,7 @@ class StudentTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            text,
+            status,
             style: TextStyle(
               fontSize: 9,
               color: textColor,
