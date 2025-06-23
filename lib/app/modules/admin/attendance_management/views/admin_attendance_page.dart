@@ -59,19 +59,16 @@ class AdminAttendancePage extends StatelessWidget {
                         children: [
                           TopTabButton(
                             label: 'STUDENTS',
-                            index: 0,
                             isSelected: controller.selectedTab.value == 0,
                             onTap: () => controller.changeTab(0),
                           ),
                           TopTabButton(
                             label: 'FACULTY',
-                            index: 1,
                             isSelected: controller.selectedTab.value == 1,
                             onTap: () => controller.changeTab(1),
                           ),
                           TopTabButton(
                             label: 'STAFF',
-                            index: 2,
                             isSelected: controller.selectedTab.value == 2,
                             onTap: () => controller.changeTab(2),
                           ),
@@ -106,14 +103,12 @@ class AdminAttendancePage extends StatelessWidget {
 
 class TopTabButton extends StatelessWidget {
   final String label;
-  final int index;
   final bool isSelected;
   final VoidCallback onTap;
 
   const TopTabButton({
     super.key,
     required this.label,
-    required this.index,
     required this.isSelected,
     required this.onTap,
   });

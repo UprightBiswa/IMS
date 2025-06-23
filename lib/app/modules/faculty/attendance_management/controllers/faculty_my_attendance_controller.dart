@@ -1,26 +1,37 @@
 import 'package:get/get.dart';
+import '../../../../constants/api_endpoints.dart';
+import '../../../../services/api_service.dart';
 import '../models/faculty_attendance_model.dart';
-import '../models/leave_request_model.dart'; // Import the new models
+import '../models/leave_balance_model.dart';
+import '../models/leave_request_model.dart';
 
 class FacultyMyAttendanceController extends GetxController {
-  final RxInt selectedSubTab = 0.obs; // 0: Overview, 1: Leave
+  // Tabs
+  final RxInt selectedSubTab = 0.obs;
 
-  final Rx<MonthlyAttendanceSummary> monthlySummary =
-      MonthlyAttendanceSummary.dummy().obs;
+  // Loading/Error
+  final RxBool isLoading = true.obs;
+  final RxBool isError = false.obs;
+  final RxString errorMessage = ''.obs;
 
+  // Attendance Data
+  final Rx<MonthlyAttendanceSummary?> monthlySummary =
+      Rx<MonthlyAttendanceSummary?>(null);
+  final RxString calendarMonthYear = ''.obs;
   final RxList<CalendarDayStatus> calendarDays = <CalendarDayStatus>[].obs;
-
   final RxList<RecentActivity> recentActivities = <RecentActivity>[].obs;
-  // Leave Management Data
-  final RxList<LeaveBalance> leaveBalances = <LeaveBalance>[].obs;
+
+  // Leave Data
+  final Rx<LeaveBalance?> leaveBalance = Rx<LeaveBalance?>(null);
   final RxList<LeaveRequest> leaveApplications = <LeaveRequest>[].obs;
 
-  // For Apply Leave Form
+  // Apply Leave Fields
   final Rx<DateTime?> selectedLeaveStartDate = Rx<DateTime?>(null);
   final Rx<DateTime?> selectedLeaveEndDate = Rx<DateTime?>(null);
   final RxString selectedLeaveType = ''.obs;
   final RxString leaveReason = ''.obs;
-  final RxBool isSingleDayLeave = true.obs; // For the "1 Day" button
+  final RxBool isSingleDayLeave = true.obs;
+
   final RxList<String> leaveTypes = <String>[
     'Sick Leave',
     'Casual Leave',
@@ -35,16 +46,11 @@ class FacultyMyAttendanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _generateDummyCalendarData();
-    recentActivities.value = RecentActivity.dummyList();
-    // Load dummy leave data
-    leaveBalances.value = LeaveBalance.dummyBalances();
-    leaveApplications.value = LeaveRequest.dummyRecentLeaveApplications();
+    fetchMyAttendanceData();
+    fetchLeaveDashboardData();
   }
 
-  void changeSubTab(int index) {
-    selectedSubTab.value = index;
-  }
+  void changeSubTab(int index) => selectedSubTab.value = index;
 
   void toggleLeaveType(bool isSingleDay) {
     isSingleDayLeave.value = isSingleDay;
@@ -53,11 +59,8 @@ class FacultyMyAttendanceController extends GetxController {
     }
   }
 
-  void updateLeaveReason(String value) {
-    leaveReason.value = value;
-  }
+  void updateLeaveReason(String value) => leaveReason.value = value;
 
-  // Example function to submit leave request (dummy)
   void submitLeaveRequest() {
     if (selectedLeaveStartDate.value == null ||
         selectedLeaveType.isEmpty ||
@@ -71,7 +74,7 @@ class FacultyMyAttendanceController extends GetxController {
       return;
     }
 
-    Get.back(); // Close the apply leave form
+    Get.back(); // Close modal
     Get.snackbar(
       'Success',
       'Leave request submitted successfully!',
@@ -79,7 +82,7 @@ class FacultyMyAttendanceController extends GetxController {
       colorText: Get.theme.colorScheme.onSecondary,
     );
 
-    // Reset form fields
+    // Reset form
     selectedLeaveStartDate.value = null;
     selectedLeaveEndDate.value = null;
     selectedLeaveType.value = '';
@@ -87,44 +90,64 @@ class FacultyMyAttendanceController extends GetxController {
     isSingleDayLeave.value = true;
   }
 
-  void _generateDummyCalendarData() {
-    final now = DateTime.now();
-    // final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+  Future<void> fetchMyAttendanceData() async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+      errorMessage.value = '';
 
-    for (int i = 1; i <= lastDayOfMonth.day; i++) {
-      final date = DateTime(now.year, now.month, i);
-      int status = 0; // Default: None
+      final response = await ApiService().get(
+        ApiEndpoints.FACULTY_ATTENDANCE_MAPP,
+      );
 
-      if (date.weekday == DateTime.saturday ||
-          date.weekday == DateTime.sunday) {
-        status = 0; // Weekend, no status
-      } else if (i % 5 == 0) {
-        // Every 5th day is late
-        status = 3; // Late
-      } else if (i % 7 == 0) {
-        // Every 7th day is absent
-        status = 2; // Absent
-      } else if (i % 9 == 0) {
-        // Every 9th day is leave
-        status = 4; // Leave
-      } else {
-        status = 1; // Present
-      }
+      final data = response.data['data']['faculty_data'];
 
-      if (date.day == 5 || date.day == 16) {
-        status = 2; // Absent (Red)
-      } else if (date.day == 9) {
-        status = 3; // Late (Yellow)
-      } else if (date.day == 21) {
-        // Selected day in image
-        status = 1; // Present
-      } else if (date.day == 10 || date.day == 12 || date.day == 14) {
-        // Leave in image
-        status = 4; // Leave
-      }
+      // Parse monthly summary
+      monthlySummary.value = MonthlyAttendanceSummary.fromJson(
+        data['monthly_attendance_widget'],
+      );
 
-      calendarDays.add(CalendarDayStatus(date: date, status: status));
+      final calendarJson = data['calendar_data'];
+
+      // Parse calendar
+      calendarDays.value = (calendarJson['data'] as List)
+          .map((e) => CalendarDayStatus.fromJson(e))
+          .toList();
+
+      calendarMonthYear.value = calendarJson['month_year'] ?? '';
+
+      recentActivities.value = RecentActivity.dummyList();
+    } catch (e) {
+      isError.value = true;
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  //leave
+  Future<void> fetchLeaveDashboardData() async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+      errorMessage.value = '';
+
+      final response = await ApiService().get(
+        ApiEndpoints.FACULTY_LEAVE_DASHBOARD_MAPP,
+      );
+
+      final data = response.data['data']['faculty_data'];
+
+      leaveBalance.value = LeaveBalance.fromJson(data['leave_balance']);
+
+      leaveApplications.value = (data['recent_leave_applications'] as List)
+          .map((e) => LeaveRequest.fromJson(e))
+          .toList();
+    } catch (e) {
+      isError.value = true;
+      errorMessage.value = 'Leave data error: ${e.toString()}';
+    } finally {
+      isLoading.value = false;
     }
   }
 }

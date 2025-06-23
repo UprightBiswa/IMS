@@ -4,7 +4,7 @@ import '../../../../widgets/custom_app_bar.dart';
 import '../../../../widgets/custom_drawer.dart';
 import '../../../admin/attendance_management/views/admin_attendance_page.dart';
 import '../controllers/faculty_attendance_controller.dart';
-import 'tab/faculty_tab/faculty_my_attendance_tab.dart';
+import 'tab/faculty_tab/tab/faculty_my_attendance_tab.dart';
 import 'tab/student_tab/faculty_student_attendance_tab.dart';
 
 class FacultyAttendancePage extends StatelessWidget {
@@ -69,13 +69,11 @@ class FacultyAttendancePage extends StatelessWidget {
                           children: [
                             TopTabButton(
                               label: 'FACULTY',
-                              index: 0,
                               isSelected: controller.selectedMainTab.value == 0,
                               onTap: () => controller.changeMainTab(0),
                             ),
                             TopTabButton(
                               label: 'STUDENTS',
-                              index: 0,
                               isSelected: controller.selectedMainTab.value == 1,
                               onTap: () => controller.changeMainTab(1),
                             ),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../../../theme/app_colors.dart';
-import '../../../controllers/faculty_student_attendance_controller.dart';
-import '../../../widgets/class_wise_attendance_card.dart';
-import '../../../widgets/recent_classes_card.dart';
-import '../../../widgets/student_attendance_summary_card.dart';
-import '../../../widgets/student_dashboard_upload_image.dart';
+import '../../../../../../../theme/app_colors.dart';
+import '../../../../../../admin/attendance_management/views/admin_attendance_page.dart';
+import '../../../../controllers/faculty_student_attendance_controller.dart';
+import '../../../../widgets/class_wise_attendance_card.dart';
+import '../../../../widgets/class_wise_attendance_list.dart';
+import '../../../../widgets/recent_classes_card.dart';
+import '../../../../widgets/student_attendance_summary_card.dart';
+import '../../../../widgets/student_dashboard_upload_image.dart';
+import '../../../../widgets/student_wise_attendance_lsit.dart';
 
 class FacultyStudentAttendanceDashboardView extends StatelessWidget {
   FacultyStudentAttendanceDashboardView({super.key});
@@ -91,13 +94,86 @@ class FacultyStudentAttendanceDashboardView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          Obx(() {
+            return Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Row(
+                spacing: 10,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TopTabButton(
+                    label: 'Overview',
+                    isSelected: controller.selectedDashboardTab.value == 0,
+                    onTap: () => controller.changeDashboardTab(0),
+                  ),
+                  TopTabButton(
+                    label: 'Classes',
+                    isSelected: controller.selectedDashboardTab.value == 1,
+                    onTap: () => controller.changeDashboardTab(1),
+                  ),
+                  TopTabButton(
+                    label: 'Students',
+                    isSelected: controller.selectedDashboardTab.value == 2,
+                    onTap: () => controller.changeDashboardTab(2),
+                  ),
+                ],
+              ),
+            );
+          }),
+          const SizedBox(height: 16),
+          Obx(() {
+            switch (controller.selectedDashboardTab.value) {
+              case 0:
+                return _buildOverviewContent();
+              case 1:
+                return _buildClassesContent();
+              case 2:
+                return _buildStudentsContent();
+              default:
+                return Container();
+            }
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewContent() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (controller.isError.value) {
+        return Center(
+          child: Text(
+            controller.errorMessage.value,
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
+      }
+
+      return Column(
+        children: [
           const OverallAttendanceSummaryCard(),
           const SizedBox(height: 16),
           const ClassWiseAttendanceCard(),
           const SizedBox(height: 16),
           const RecentClassesCard(),
         ],
-      ),
-    );
+      );
+    });
+  }
+
+  Widget _buildClassesContent() {
+    return const ClassWiseAttendanceList();
+  }
+
+  Widget _buildStudentsContent() {
+    return StudentWiseAttendanceList();
   }
 }

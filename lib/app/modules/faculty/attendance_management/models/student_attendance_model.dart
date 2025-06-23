@@ -18,14 +18,19 @@ class OverallStudentAttendanceSummary {
     required this.belowThresholdStudents,
   });
 
-  static OverallStudentAttendanceSummary dummy() {
+  factory OverallStudentAttendanceSummary.fromJson(Map<String, dynamic> json) {
+    final int total = json['total_students'] ?? 0;
+    final double present = (json['present'] ?? 0).toDouble();
+    final double absent = (json['absent'] ?? 0).toDouble();
+    final double late = (json['late'] ?? 0).toDouble();
+
     return OverallStudentAttendanceSummary(
-      totalStudents: 1245,
-      presentToday: 1142,
-      absentStudents: 100, // For "8% of total"
-      lateStudent: 3,
-      weeklyAttendanceRate: 98.3,
-      belowThresholdStudents: 12, // Corresponds to "12 Students" in UI
+      totalStudents: total,
+      presentToday: ((present * total) / 100).round(),
+      absentStudents: ((absent * total) / 100).round(),
+      lateStudent: ((late * total) / 100).round(),
+      weeklyAttendanceRate: present,
+      belowThresholdStudents: json['students_with_lt_75_percentage'] ?? 0,
     );
   }
 }
@@ -33,50 +38,21 @@ class OverallStudentAttendanceSummary {
 // Class-wise Attendance Snapshot
 class ClassAttendanceSnapshot {
   final String className;
-  final String section;
   final double attendancePercentage;
-  final int studentsPresent;
   final int totalStudents;
 
   ClassAttendanceSnapshot({
     required this.className,
-    required this.section,
     required this.attendancePercentage,
-    required this.studentsPresent,
     required this.totalStudents,
   });
 
-  static List<ClassAttendanceSnapshot> dummyList() {
-    return [
-      ClassAttendanceSnapshot(
-        className: 'B.Sc Physics 2nd Year',
-        section: 'Section A',
-        attendancePercentage: 87.2,
-        studentsPresent: 5,
-        totalStudents: 38,
-      ),
-      ClassAttendanceSnapshot(
-        className: 'B.Com 2B',
-        section: 'Section B',
-        attendancePercentage: 78.1,
-        studentsPresent: 9,
-        totalStudents: 47,
-      ),
-      ClassAttendanceSnapshot(
-        className: 'B.Tech 3C',
-        section: 'Section C',
-        attendancePercentage: 90.7,
-        studentsPresent: 2,
-        totalStudents: 39,
-      ),
-      ClassAttendanceSnapshot(
-        className: 'BBA 2A',
-        section: 'Section A',
-        attendancePercentage: 72.8,
-        studentsPresent: 14,
-        totalStudents: 42,
-      ),
-    ];
+  factory ClassAttendanceSnapshot.fromJson(Map<String, dynamic> json) {
+    return ClassAttendanceSnapshot(
+      className: json['course_name'] ?? '',
+      attendancePercentage: (json['attendance_percentage'] as num).toDouble(),
+      totalStudents: json['number_of_students'],
+    );
   }
 }
 
@@ -88,7 +64,7 @@ class RecentClass {
   final int presentCount;
   final int absentCount;
   final int lateCount;
-  final int totalStudents; // To calculate unmarked
+  final int totalStudents;
 
   RecentClass({
     required this.courseName,
@@ -100,37 +76,45 @@ class RecentClass {
     required this.totalStudents,
   });
 
+  factory RecentClass.fromJson(Map<String, dynamic> json) {
+    return RecentClass(
+      courseName: json['course_name'] ?? '',
+      subject: json['subject_name'] ?? '',
+      date: DateTime.parse(json['date']),
+      presentCount: json['students_present'],
+      absentCount: json['students_absent'],
+      lateCount: json['students_late'],
+      totalStudents:
+          json['students_present'] +
+          json['students_absent'] +
+          json['students_late'],
+    );
+  }
+}
 
-  static List<RecentClass> dummyList() {
-    return [
-      RecentClass(
-        courseName: 'Quantum Mechanics',
-        subject: 'BSc Physics 3rd Year',
-        date: DateTime(2025, 5, 21),
-        presentCount: 29,
-        absentCount: 3,
-        lateCount: 2,
-        totalStudents: 34,
-      ),
-      RecentClass(
-        courseName: 'Advanced Thermodynamics',
-        subject: 'BSc Physics 3rd Year',
-        date: DateTime(2025, 5, 20),
-        presentCount: 32,
-        absentCount: 3,
-        lateCount: 0,
-        totalStudents: 35,
-      ),
-      RecentClass(
-        courseName: 'Organic Chemistry',
-        subject: 'BSc Chemistry 1st Year',
-        date: DateTime(2025, 5, 19),
-        presentCount: 41,
-        absentCount: 7,
-        lateCount: 2,
-        totalStudents: 50,
-      ),
-    ];
+class StudentBasicInfo {
+  final String rollNumber;
+  final String name;
+  final String status; // Fake status
+
+  StudentBasicInfo({
+    required this.rollNumber,
+    required this.name,
+    required this.status,
+  });
+
+  factory StudentBasicInfo.fromJson(Map<String, dynamic> json) {
+    return StudentBasicInfo(
+      rollNumber: json['roll_number'],
+      name: json['student_name'],
+      status: _generateRandomStatus(), // Assign a random status
+    );
+  }
+
+  static String _generateRandomStatus() {
+    final statuses = ['Present', 'Absent', 'Late'];
+    statuses.shuffle();
+    return statuses.first;
   }
 }
 

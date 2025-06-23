@@ -1,4 +1,3 @@
-// lib/app/modules/faculty/attendance_management/views/widgets/monthly_attendance_card.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../theme/app_colors.dart';
@@ -12,7 +11,30 @@ class MonthlyAttendanceCard extends StatelessWidget {
     final controller = Get.find<FacultyMyAttendanceController>();
 
     return Obx(() {
+      if (controller.isLoading.value) {
+        return Container(
+          height: 150,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(),
+        );
+      }
+
+      if (controller.isError.value) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          alignment: Alignment.center,
+          child: Text(
+            'Error: ${controller.errorMessage.value}',
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
+      }
+
       final summary = controller.monthlySummary.value;
+
+      if (summary == null) {
+        return const SizedBox(); // Or fallback UI
+      }
       return Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -75,7 +97,7 @@ class MonthlyAttendanceCard extends StatelessWidget {
                 ),
                 _buildAttendanceItem(
                   summary.absent,
-                  'Guards',
+                  'Absent',
                   AppColors.primaryRed,
                 ),
                 _buildAttendanceItem(
@@ -102,7 +124,6 @@ class MonthlyAttendanceCard extends StatelessWidget {
                   '${summary.complianceMessage.replaceAll('%', '')}%', // Just display the percentage part
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
                     color:
                         double.parse(
                               summary.complianceMessage.replaceAll('%', ''),

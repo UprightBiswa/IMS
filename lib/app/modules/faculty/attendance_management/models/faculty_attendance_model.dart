@@ -1,39 +1,84 @@
+// models/faculty_attendance_model.dart
+
 import 'package:flutter/material.dart';
 
 class MonthlyAttendanceSummary {
   final int present;
-  final int absent;
   final int late;
   final int leave;
+  final int absent;
   final double requiredPercentage;
-  final String complianceMessage; // E.g., "77.6%"
+  final String complianceMessage;
 
   MonthlyAttendanceSummary({
     required this.present,
-    required this.absent,
     required this.late,
     required this.leave,
+    required this.absent,
     required this.requiredPercentage,
     required this.complianceMessage,
   });
 
-  static MonthlyAttendanceSummary dummy() {
+  factory MonthlyAttendanceSummary.fromJson(Map<String, dynamic> json) {
     return MonthlyAttendanceSummary(
-      present: 21,
-      absent: 2,
-      late: 1,
-      leave: 3,
-      requiredPercentage: 85.0,
-      complianceMessage: "77.6%",
+      present: json['total_days_present'] ?? 0,
+      late: json['late'] ?? 0,
+      leave: json['leave'] ?? 0,
+      absent: json['absent_days'] ?? 0,
+      requiredPercentage: (json['required_attendance'] ?? 0).toDouble(),
+      complianceMessage: "${json['summary_percentage']}%",
     );
   }
 }
 
+enum AttendanceType { present, absent, late, leave }
+
+int getStatusCode(String status) {
+  switch (status.toLowerCase()) {
+    case 'present':
+      return 1;
+    case 'absent':
+      return 2;
+    case 'late':
+      return 3;
+    case 'leave':
+      return 4;
+    default:
+      return 0;
+  }
+}
+
+
 class CalendarDayStatus {
   final DateTime date;
-  final int status;
+  final String status;
+  final String? reason;
+  final String? checkIn;
+  final String? checkOut;
+  final String weekday;
+  final int statusCode;
 
-  CalendarDayStatus({required this.date, required this.status});
+  CalendarDayStatus({
+    required this.date,
+    required this.status,
+    this.reason,
+    this.checkIn,
+    this.checkOut,
+    required this.weekday,
+    required this.statusCode,
+  });
+
+  factory CalendarDayStatus.fromJson(Map<String, dynamic> json) {
+    return CalendarDayStatus(
+      date: DateTime.parse(json['date']),
+      status: json['status'],
+      reason: json['reason'],
+      checkIn: json['check_in_time'],
+      checkOut: json['check_out_time'],
+      weekday: json['weekday'],
+      statusCode: getStatusCode(json['status'].toString()),
+    );
+  }
 }
 
 class RecentActivity {

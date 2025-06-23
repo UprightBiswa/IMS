@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import '../../../../theme/app_colors.dart';
 import '../controllers/faculty_student_attendance_controller.dart';
 
-class ClassWiseAttendanceCard extends StatelessWidget {
-  const ClassWiseAttendanceCard({super.key});
+class ClassWiseAttendanceList extends StatelessWidget {
+  const ClassWiseAttendanceList({super.key});
 
   Color _getComplianceColor(double percentage) {
     if (percentage >= 90) return AppColors.primaryGreen;
@@ -19,23 +19,66 @@ class ClassWiseAttendanceCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Class-wise Attendance',
+          style: TextStyle(fontSize: 12, color: AppColors.darkText),
+        ),
+        const SizedBox(height: 16),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Class-wise Attendance',
-              style: TextStyle(fontSize: 12, color: AppColors.darkText),
+            Expanded(
+              child: Container(
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const TextField(
+                  style: TextStyle(fontSize: 10),
+                  decoration: InputDecoration(
+                    hintText: 'Search Class...',
+                    hintStyle: TextStyle(fontSize: 10, color: Colors.grey),
+                    prefixIcon: Icon(Icons.search, size: 16),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 0,
+                      vertical: 0,
+                    ),
+                  ),
+                ),
+              ),
             ),
-            //view all
-            TextButton(
-              onPressed: () {
-                controller.changeDashboardTab(1);
+            const SizedBox(width: 16),
+            GestureDetector(
+              onTap: () {
+                // Handle filter action
               },
-              child: Text('View All'),
+              child: Container(
+                height: 30,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300, width: .5),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.filter_alt_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    const Text('Filter', style: TextStyle(fontSize: 10)),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 16),
+
+        // show row,
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(

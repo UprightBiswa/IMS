@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../../../theme/app_colors.dart';
-import '../../../controllers/faculty_student_attendance_controller.dart';
-import '../../../models/student_attendance_model.dart';
+import '../../../../../../../theme/app_colors.dart';
+import '../../../../controllers/faculty_student_attendance_controller.dart';
+import '../../../../models/student_attendance_model.dart';
 
 class FacultyStudentAttendanceMarkView extends StatelessWidget {
   FacultyStudentAttendanceMarkView({super.key});

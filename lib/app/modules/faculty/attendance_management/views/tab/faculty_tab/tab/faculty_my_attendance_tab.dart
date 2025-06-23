@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../../theme/app_colors.dart';
-import '../../../../../admin/attendance_management/views/admin_attendance_page.dart';
-import '../../../controllers/faculty_my_attendance_controller.dart';
-import '../../../widgets/monthly_attendance_card.dart';
+import '../../../../../../../theme/app_colors.dart';
+import '../../../../../../admin/attendance_management/views/admin_attendance_page.dart';
+import '../../../../controllers/faculty_my_attendance_controller.dart';
+import '../../../../widgets/monthly_attendance_card.dart';
 import 'faculty_my_attendance_overview_view.dart';
-import 'faculty_my_attendance_leave_view.dart';
+import '../faculty_my_attendance_leave_view.dart';
 
 class FacultyMyAttendanceTab extends StatelessWidget {
   FacultyMyAttendanceTab({super.key});
@@ -64,14 +64,12 @@ class FacultyMyAttendanceTab extends StatelessWidget {
                     children: [
                       TopTabButton(
                         label: 'Overview',
-                        index: 0,
                         isSelected: controller.selectedSubTab.value == 0,
                         onTap: () => controller.changeSubTab(0),
                       ),
 
                       TopTabButton(
                         label: 'Leave',
-                        index: 1,
                         isSelected: controller.selectedSubTab.value == 1,
                         onTap: () => controller.changeSubTab(1),
                       ),

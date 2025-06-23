@@ -13,8 +13,9 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
 
     return Obx(() {
       final summary = controller.overallSummary.value;
+      if (summary == null) return SizedBox.shrink();
+      final int total = summary.totalStudents == 0 ? 1 : summary.totalStudents;
       return Container(
-        width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFFF7F9FA),
@@ -35,8 +36,8 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
                 Expanded(
                   child: _buildInfoSquare(
                     label: 'present',
-                    value:
-                        '${summary.presentToday * 100 ~/ summary.totalStudents}%',
+                    value: '${(summary.presentToday * 100 ~/ total)}%',
+
                     iconColor: AppColors.accentGreen,
                   ),
                 ),
@@ -44,8 +45,7 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
                 Expanded(
                   child: _buildInfoSquare(
                     label: 'Absent',
-                    value:
-                        '${summary.absentStudents * 100 ~/ summary.totalStudents}%', // Assuming presentToday is actual count
+                    value: '${(summary.absentStudents * 100 ~/ total)}%',
                     iconColor: AppColors.accentRed,
                   ),
                 ),
@@ -54,9 +54,7 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
                 Expanded(
                   child: _buildInfoSquare(
                     label: 'late',
-                    value:
-                        '${summary.lateStudent * 100 ~/ summary.totalStudents}%', // Assuming presentToday is actual count
-
+                    value: '${(summary.lateStudent * 100 ~/ total)}%',
                     iconColor: AppColors.accentYellow,
                   ),
                 ),
@@ -80,9 +78,13 @@ class OverallAttendanceSummaryCard extends StatelessWidget {
 
             /// show line pregeress bar black cor
             LinearProgressIndicator(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              value: summary.belowThresholdStudents / summary.totalStudents,
+              value: summary.weeklyAttendanceRate / 100,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(8),
+              backgroundColor: Colors.grey[300],
+              color: AppColors.primaryBlue,
             ),
+
             const SizedBox(height: 16),
 
             //show total stuent

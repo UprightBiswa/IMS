@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../theme/app_colors.dart';
 import '../controllers/faculty_my_attendance_controller.dart';
-import '../models/leave_request_model.dart';
 
 class LeaveBalanceCard extends StatelessWidget {
   const LeaveBalanceCard({super.key});
@@ -11,87 +10,106 @@ class LeaveBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<FacultyMyAttendanceController>();
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F7),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          width: 1.6,
-          color: const Color(0xFF5F5D5D).withValues(alpha: .1),
+      if (controller.isError.value) {
+        return Center(
+          child: Text(
+            controller.errorMessage.value,
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
+      }
+
+      final balance = controller.leaveBalance.value;
+
+      if (balance == null) {
+        return const Center(child: Text("No leave balance data available."));
+      }
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7F7),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            width: 1.6,
+            color: const Color(0xFF5F5D5D).withValues(alpha: .1),
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          const Icon(
-            Icons.calendar_today_outlined,
-            color: AppColors.primaryBlue,
-            size: 32,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Leave Management',
-            style: TextStyle(fontSize: 16, color: AppColors.darkText),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Apply for your leave and view your leav history',
-            style: TextStyle(fontSize: 12, color: AppColors.greyText),
-          ),
-          const SizedBox(height: 8),
-          //buttion primary Apply for new leave
-          SizedBox(
-            width: 240,
-            child: ElevatedButton(
-              onPressed: () {
-                Get.to(() => ApplyForLeaveView());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.calendar_today_outlined,
+              color: AppColors.primaryBlue,
+              size: 32,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Leave Management',
+              style: TextStyle(fontSize: 16, color: AppColors.darkText),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Apply for your leave and view your leav history',
+              style: TextStyle(fontSize: 12, color: AppColors.greyText),
+            ),
+            const SizedBox(height: 8),
+            //buttion primary Apply for new leave
+            SizedBox(
+              width: 240,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.to(() => ApplyForLeaveView());
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                child: const Text(
+                  'Apply for New Leave',
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              child: const Text(
-                'Apply for New Leave',
-                style: TextStyle(color: Colors.white),
               ),
             ),
-          ),
 
-          const SizedBox(height: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Leave Balances',
-                style: TextStyle(fontSize: 12, color: AppColors.darkText),
-              ),
-              const SizedBox(height: 8),
-              Obx(() {
-                return Row(
-                  spacing: 8,
+            const SizedBox(height: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Leave Balances',
+                  style: TextStyle(fontSize: 12, color: AppColors.darkText),
+                ),
+                const SizedBox(height: 8),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: controller.leaveBalances.map((balance) {
-                    return _buildLeaveBalanceItem(balance);
-                  }).toList(),
-                );
-              }),
-            ],
-          ),
-        ],
-      ),
-    );
+                  children: [
+                    _buildLeaveItem('Casual', balance.casual),
+                    _buildLeaveItem('Sick', balance.sick),
+                    _buildLeaveItem('Earned', balance.earned),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildLeaveBalanceItem(LeaveBalance balance) {
+  Widget _buildLeaveItem(String type, int count) {
     return Expanded(
       child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         height: 70,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -100,12 +118,9 @@ class LeaveBalanceCard extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              '${balance.remaining}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              '$count',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
@@ -113,13 +128,11 @@ class LeaveBalanceCard extends StatelessWidget {
               ),
             ),
             Text(
-              balance.type.split(' ')[0],
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              type,
               style: TextStyle(
                 fontSize: 10,
-                color: AppColors.greyText,
                 fontWeight: FontWeight.w300,
+                color: AppColors.greyText,
               ),
             ),
           ],

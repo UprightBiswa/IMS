@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../admin/attendance_management/views/admin_attendance_page.dart';
 import '../../../controllers/faculty_student_attendance_controller.dart';
-import 'faculty_student_attendance_dashboard_view.dart';
-import 'faculty_student_attendance_mark_view.dart';
-import 'faculty_student_attendance_record_view.dart';
+import 'tab/faculty_student_attendance_dashboard_view.dart';
+import 'tab/faculty_student_attendance_mark_view.dart';
+import 'tab/faculty_student_attendance_record_view.dart';
 
 class FacultyStudentAttendanceTab extends StatelessWidget {
   FacultyStudentAttendanceTab({super.key});
@@ -54,19 +54,16 @@ class FacultyStudentAttendanceTab extends StatelessWidget {
                     children: [
                       TopTabButton(
                         label: 'Dashboard',
-                        index: 0,
                         isSelected: controller.selectedStudentSubTab.value == 0,
                         onTap: () => controller.changeStudentSubTab(0),
                       ),
                       TopTabButton(
                         label: 'Record',
-                        index: 1,
                         isSelected: controller.selectedStudentSubTab.value == 1,
                         onTap: () => controller.changeStudentSubTab(1),
                       ),
                       TopTabButton(
                         label: 'Mark',
-                        index: 2,
                         isSelected: controller.selectedStudentSubTab.value == 2,
                         onTap: () => controller.changeStudentSubTab(2),
                       ),
@@ -78,7 +75,6 @@ class FacultyStudentAttendanceTab extends StatelessWidget {
           ),
         ),
 
-        // Content based on selected sub-tab
         Obx(() {
           switch (controller.selectedStudentSubTab.value) {
             case 0:

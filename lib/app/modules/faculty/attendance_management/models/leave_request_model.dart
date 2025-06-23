@@ -3,43 +3,47 @@ import 'package:flutter/material.dart';
 enum LeaveStatus { Approved, Rejected, Pending, Cancelled }
 
 class LeaveRequest {
-  final String id;
-  final DateTime startDate;
-  final DateTime endDate;
-  final String leaveType; // e.g., "Medical emergency", "Personal reasons"
+  final int days;
+  final String leaveDates;
+  final String leaveType;
   final String reason;
-  final DateTime submittedDate;
   final LeaveStatus status;
-  final String days;
-  final String? documentUrl; // Optional: URL to supporting document
 
   LeaveRequest({
-    required this.id,
-    required this.startDate,
-    required this.endDate,
+    required this.days,
+    required this.leaveDates,
     required this.leaveType,
     required this.reason,
-    required this.submittedDate,
     required this.status,
-    required this.days,
-    this.documentUrl,
   });
 
-  // Helper to get status string for UI
-  String get statusString {
-    switch (status) {
-      case LeaveStatus.Approved:
-        return 'Approved';
-      case LeaveStatus.Rejected:
-        return 'Rejected';
-      case LeaveStatus.Pending:
-        return 'Pending';
-      case LeaveStatus.Cancelled:
-        return 'Cancelled';
+  factory LeaveRequest.fromJson(Map<String, dynamic> json) {
+    return LeaveRequest(
+      days: json['days'],
+      leaveDates: json['leave_dates'],
+      leaveType: json['leave_type'],
+      reason: json['reason'],
+      status: _parseStatus(json['status']),
+    );
+  }
+
+  static LeaveStatus _parseStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return LeaveStatus.Approved;
+      case 'rejected':
+        return LeaveStatus.Rejected;
+      case 'pending':
+        return LeaveStatus.Pending;
+      case 'cancelled':
+        return LeaveStatus.Cancelled;
+      default:
+        return LeaveStatus.Pending;
     }
   }
 
-  // Helper to get status color for UI
+  String get statusString => status.name;
+
   Color get statusColor {
     switch (status) {
       case LeaveStatus.Approved:
@@ -51,65 +55,5 @@ class LeaveRequest {
       case LeaveStatus.Cancelled:
         return Colors.grey;
     }
-  }
-
-  // Dummy data factories
-  static List<LeaveRequest> dummyRecentLeaveApplications() {
-    return [
-      LeaveRequest(
-        id: 'L001',
-        startDate: DateTime(2025, 4, 10),
-        endDate: DateTime(2025, 4, 12),
-        leaveType: 'Medical emergency',
-        reason: 'Acute fever',
-        submittedDate: DateTime(2025, 4, 8),
-        days: '3',
-        status: LeaveStatus.Approved,
-      ),
-      LeaveRequest(
-        id: 'L002',
-        startDate: DateTime(2025, 3, 20),
-        endDate: DateTime(2025, 3, 20),
-        leaveType: 'Personal reasons',
-        reason: 'Family event',
-        submittedDate: DateTime(2025, 3, 18),
-        status: LeaveStatus.Rejected,
-        days: '1',
-
-      ),
-      LeaveRequest(
-        id: 'L003',
-        startDate: DateTime(2025, 2, 1),
-        endDate: DateTime(2025, 2, 2),
-        leaveType: 'Sick Leave',
-        reason: 'Flu symptoms',
-        submittedDate: DateTime(2025, 1, 30),
-
-        status: LeaveStatus.Approved,
-        days: '2',
-      ),
-    ];
-  }
-}
-
-class LeaveBalance {
-  final String type;
-  final int total;
-  final int consumed;
-  final int remaining;
-
-  LeaveBalance({
-    required this.type,
-    required this.total,
-    required this.consumed,
-    required this.remaining,
-  });
-
-  static List<LeaveBalance> dummyBalances() {
-    return [
-      LeaveBalance(type: 'Sick Leave', total: 7, consumed: 5, remaining: 2),
-      LeaveBalance(type: 'Casual Leave', total: 7, consumed: 4, remaining: 3),
-      LeaveBalance(type: 'Earned Leave', total: 18, consumed: 10, remaining: 8),
-    ];
   }
 }

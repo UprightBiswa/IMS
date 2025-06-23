@@ -10,10 +10,10 @@ class RecentClassesCard extends StatelessWidget {
 
   Color _getStatusColor(int count, int total) {
     if (count / total > 0.8) {
-      return AppColors.primaryGreen; // More than 80% present
+      return AppColors.primaryGreen;
     }
-    if (count / total > 0.6) return AppColors.primaryOrange; // 60-80% present
-    return AppColors.primaryRed; // Less than 60% present
+    if (count / total > 0.6) return AppColors.primaryOrange;
+    return AppColors.primaryRed;
   }
 
   @override

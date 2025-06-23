@@ -14,4 +14,15 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/admin/faculty_mapp';
   static const String ADMIN_DASHBOARD_STAFF_MAPP =
       '/api/v1/attendance/dashboard/admin/staff_mapp';
+
+
+  // Faculty dashboard endpoints
+  static const String FACULTY_ATTENDANCE_MAPP =
+      '/api/v1/attendance/dashboard/faculty/attendance_mapp';
+  static const String FACULTY_LEAVE_DASHBOARD_MAPP =
+      '/api/v1/attendance/dashboard/faculty/leave_dashboard_mapp';
+  static const String FACULTY_STUDENT_ATTENDANCE_DASHBOARD_MAPP =
+      '/api/v1/attendance/dashboard/faculty/student_attendance_dashboard_mapp';
+  static const String FACULTY_STUDENTWISE_ATTENDANCE_MAPP =
+      '/api/v1/attendance/dashboard/faculty/student_studentwise_attendance_mapp';
 }
