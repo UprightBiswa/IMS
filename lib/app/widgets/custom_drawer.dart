@@ -83,6 +83,10 @@ class CustomDrawer extends GetView<ProfileController> {
                 style: TextStyle(color: Colors.white70, fontSize: 12),
               ),
               const SizedBox(height: 16),
+              _drawerItem(
+                'Facial Attendance',
+                () => Get.toNamed(Routes.FACIAL_ATTENDANCE),
+              ),
               _drawerItem('Settings', () => Get.toNamed(Routes.SETTINGS)),
               _drawerItem('Help', () => Get.toNamed(Routes.HELP)),
             ],

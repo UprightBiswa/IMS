@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         getPages: AppPages.routes,
         builder: (context, child) {
           return SafeArea(
-            top: true,
+            top: false,
             bottom: true,
             child: child ?? const SizedBox(),
           );

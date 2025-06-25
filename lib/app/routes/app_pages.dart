@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Import your views and bindings
 import '../constants/app_constrants.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
+import '../modules/facialAttendance/bindings/facial_attendance_binding.dart';
+import '../modules/facialAttendance/views/facial_attendance_view.dart';
 import '../modules/faculty/attendance_management/bindings/faculty_attendance_binding.dart';
 import '../modules/faculty/attendance_management/views/faculty_attendance_page.dart';
 import '../modules/onboarding/bindings/onbording_binding.dart';
@@ -125,6 +127,13 @@ class AppPages {
       name: Routes.HELP,
       page: () => HelpView(),
       middlewares: [RouteProtectionMiddleware()],
+    ),
+
+     // ... other existing GetPages ...
+    GetPage(
+      name: Routes.FACIAL_ATTENDANCE, // NEW PAGE
+      page: () => const FacialAttendanceView(),
+      binding: FacialAttendanceBinding(),
     ),
   ];
 }

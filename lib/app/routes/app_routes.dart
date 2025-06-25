@@ -18,4 +18,6 @@ abstract class Routes {
   static const PROFILE = '/profile';
   static const SETTINGS = '/settings';
   static const HELP = '/help';
+
+  static const FACIAL_ATTENDANCE = '/facial-attendance';
 }
