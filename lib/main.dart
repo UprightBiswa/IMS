@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         title: "Attendance Management System",
         defaultTransition: Transition.cupertino,
         theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         debugShowCheckedModeBanner: false,
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,

@@ -5,6 +5,9 @@ class HelpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Help')),
+      body: const Center(child: Text('Help Page')),
+    );
   }
 }

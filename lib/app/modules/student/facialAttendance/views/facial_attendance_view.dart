@@ -2,7 +2,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../theme/app_colors.dart';
+import '../../../../theme/app_colors.dart';
 import '../controllers/facial_attendance_controller.dart';
 
 class FacialAttendanceView extends GetView<FacialAttendanceController> {

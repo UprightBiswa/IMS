@@ -38,13 +38,49 @@ class AppTheme {
       ),
     ),
   );
+
+  //darkTheme
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
+    scaffoldBackgroundColor: AppColors.sidebarWhite,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primaryBlue,
+      primary: AppColors.primaryBlue,
+      secondary: AppColors.accentGreen,
+    ),
+    textTheme: GoogleFonts.interTextTheme().copyWith(
+      bodyLarge: const TextStyle(color: AppColors.textBlack),
+      bodyMedium: const TextStyle(color: AppColors.secondaryTextGray),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.sidebarWhite,
+      foregroundColor: AppColors.sidebarWhite,
+      elevation: 0,
+      iconTheme: IconThemeData(color: AppColors.secondaryTextGray),
+      titleTextStyle: TextStyle(
+        color: AppColors.secondaryTextGray,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: Colors.white,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+        ),
+      ),
+    ),
+  );
 }
 
 SystemUiOverlayStyle defaultOverlay = const SystemUiOverlayStyle(
-  statusBarColor: Colors.white,
+  statusBarColor: Colors.transparent,
   statusBarBrightness: Brightness.light,
   statusBarIconBrightness: Brightness.light,
-  systemNavigationBarColor: Colors.white,
+  systemNavigationBarColor: Colors.transparent,
   systemNavigationBarDividerColor: Colors.white,
   systemNavigationBarIconBrightness: Brightness.light,
 );

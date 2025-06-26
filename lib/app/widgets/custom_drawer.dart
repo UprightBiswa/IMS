@@ -65,14 +65,15 @@ class CustomDrawer extends GetView<ProfileController> {
               // Main Items
               _drawerItem('Home', () => Get.offAllNamed(Routes.HOME)),
               _drawerItem('Attendance', () => Get.toNamed(Routes.ATTENDANCE)),
-              _drawerItem('Timetable', () {}),
-              _drawerItem('Assignments', () {}),
-              _drawerItem('Announcement', () {}),
-              _drawerItem('Syllabus', () {}),
-              _drawerItem('Library', () {}),
-              _drawerItem('Fees', () {}),
+              _drawerItem('Timetable', () => Get.toNamed(Routes.TIMETABLE)),
+              _drawerItem('Assignments', () => Get.toNamed(Routes.ASSIGNMENTS)),
+              _drawerItem('Announcement', () => Get.toNamed(Routes.MESSAGES)),
+              _drawerItem('Syllabus', () => Get.toNamed(Routes.SYLLABUS)),
+              _drawerItem('Library', () => Get.toNamed(Routes.LIBRARY)),
+              _drawerItem('Fees', () => Get.toNamed(Routes.FEES)),
+              _drawerItem('Grades', () => Get.toNamed(Routes.GRADES)),
               _drawerItem(
-                'Grades',
+                'Faculty',
                 () => Get.toNamed(Routes.FACULTY_ATTENDANCE),
               ),
 
