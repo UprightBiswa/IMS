@@ -23,7 +23,8 @@ import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/student/setting/bindings/settings_binding.dart';
 import '../modules/student/setting/view/settings_view.dart';
-import '../modules/student/syllabus/view/syllabus_main_view.dart';
+import '../modules/student/syllabus/bindings/syllabus_binding.dart';
+import '../modules/student/syllabus/view/syllabus_view.dart';
 import 'app_routes.dart';
 
 class RouteProtectionMiddleware extends GetMiddleware {
@@ -108,7 +109,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.SYLLABUS,
-      page: () => SyllabusMainView(),
+      page: () => SyllabusView(),
+      binding: SyllabusBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../theme/app_colors.dart' show AppColors;
+
 class RecommendedActionsCard extends StatelessWidget {
   const RecommendedActionsCard({super.key});
 
@@ -28,13 +30,38 @@ class RecommendedActionsCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Your attendance forecast is indicating a downward trend. Here's what you can do:\n"
-                  "• Attend all Computer Networks classes this month (crucial)\n"
-                  "• Don’t miss any more Database Systems lectures\n"
-                  "• Meet with your advisor to discuss attendance options",
+                  "Your progress forecast is indicating a downward trend. Here's what you can do:\n",
                   style: TextStyle(fontSize: 12, color: Colors.black87),
                 ),
+                _buildBulletPoint(
+                  'Focus on English Literature - complete Chapters 6-8 by Friday.',
+                ),
+                _buildBulletPoint(
+                  'Complete your remaining research report on Data Structures.',
+                ),
+                _buildBulletPoint(
+                  'Meet with your advisor to discuss study strategies.',
+                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.circle, size: 6, color: AppColors.darkText),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ),
         ],

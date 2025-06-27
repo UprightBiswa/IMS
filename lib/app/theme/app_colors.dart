@@ -72,4 +72,19 @@ class AppColors {
   static Color withOpacity(Color color, double opacity) {
     return color.withValues(alpha: opacity);
   }
+// NEW Colors for Syllabus/Exam/Resources UI
+  static const Color progressGoodBg = Color(0xFFE8F5E9); // Light green background for "GOOD" progress
+  static const Color progressGoodText = Color(0xFF2E7D32); // Darker green text for "GOOD"
+  static const Color progressInProgressBg = Color(0xFFFFF3E0); // Light orange background for "IN PROGRESS"
+  static const Color progressInProgressText = Color(0xFFFF6F00); // Darker orange text for "IN PROGRESS"
+  static const Color progressBehindBg = Color(0xFFFFEBEE); // Light red background for "BEHIND"
+  static const Color progressBehindText = Color(0xFFD32F2F); // Darker red text for "BEHIND"
+  static const Color examTodayBg = Color(0xFFE3F2FD); // Light blue for "TODAY" exam
+  static const Color examTodayText = Color(0xFF2196F3); // Darker blue for "TODAY" text
+  static const Color examUpcomingBg = Color(0xFFFFFDE7); // Light yellow for "UPCOMING" exam
+  static const Color examUpcomingText = Color(0xFFFBDF2D); // Darker yellow for "UPCOMING" text
+  static const Color examCompletedBg = Color(0xFFE8F5E9); // Light green for "COMPLETED" exam
+  static const Color examCompletedText = Color(0xFF2E7D32); // Darker green for "COMPLETED" text
+  static const Color downloadGreen = Color(0xFF4CAF50); // Downloaded status
+  static const Color syncCloudBlue = Color(0xFF2196F3); // Sync Cloud status
 }

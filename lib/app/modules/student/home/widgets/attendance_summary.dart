@@ -79,7 +79,15 @@ class AttendanceStat extends StatelessWidget {
 
 //
 class SummaryPersentage extends StatelessWidget {
-  const SummaryPersentage({super.key});
+  final double width;
+  final double height;
+  final double value;
+  const SummaryPersentage({
+    super.key,
+    this.width = 100,
+    this.height = 100,
+    this.value = 0.82,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +95,10 @@ class SummaryPersentage extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         SizedBox(
-          width: 100,
-          height: 100,
+          width: width,
+          height: height,
           child: CircularProgressIndicator(
-            value: 0.82, // 82%
+            value: value / 100, // 82%
             strokeWidth: 6,
             backgroundColor: Colors.grey.shade200,
             valueColor: const AlwaysStoppedAnimation<Color>(
@@ -99,16 +107,16 @@ class SummaryPersentage extends StatelessWidget {
           ),
         ),
         Column(
-          children: const [
+          children: [
             Text(
-              "82%",
-              style: TextStyle(
+              "${value.toStringAsFixed(0)}%",
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textBlack,
               ),
             ),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
