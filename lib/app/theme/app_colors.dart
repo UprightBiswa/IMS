@@ -9,6 +9,7 @@ class AppColors {
   static const Color lightGrey = Color(0xFFF5F5F5);
   static const Color grey = Color(0xFF9E9E9E);
   static const Color dangerRed = Color(0xFFF44336);
+   static const Color warningYellow = Color(0xFFFFC107);
 
   static const Color primaryGreen = Color(0xFF4CAF50); // Green for progress
   static const Color primaryOrange = Color(0xFFFF9800); // Orange
@@ -87,4 +88,17 @@ class AppColors {
   static const Color examCompletedText = Color(0xFF2E7D32); // Darker green for "COMPLETED" text
   static const Color downloadGreen = Color(0xFF4CAF50); // Downloaded status
   static const Color syncCloudBlue = Color(0xFF2196F3); // Sync Cloud status
+
+  // NEW COLORS FOR GRADES/RESULTS
+  static const Color gradeExcellent = Color(0xFF4CAF50);
+  static const Color gradeGood = Color(0xFF2196F3); // Similar to light green
+  static const Color gradeAverage = Color(0xFFFFC107);
+  static const Color gradeCritical = Color(0xFFF44336);
+  static const Color gradeA = Color(0xFF4CAF50); // A- Excellent
+  static const Color gradeB = Color(0xFF8BC34A); // B+ Good
+  static const Color gradeC = Color(0xFFFFC107); // C+ Average
+  static const Color gradeD = Color(0xFFF44336); // D+ Critical
+  static const Color gradeBgLightGreen = Color(0xFFE8F5E9);
+  static const Color gradeBgLightOrange = Color(0xFFFFF3E0);
+  static const Color gradeBgLightRed = Color(0xFFFFEBEE);
 }

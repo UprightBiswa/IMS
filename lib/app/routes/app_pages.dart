@@ -13,7 +13,8 @@ import '../modules/onboarding/bindings/onbording_binding.dart';
 import '../modules/onboarding/views/orboarding_view.dart';
 import '../modules/student/attendance/view/attendance_main_view.dart'; // Ensure correct path
 import '../modules/auth/views/login_view.dart';
-import '../modules/student/grades/view/grades_main_view.dart';
+import '../modules/student/grades/bindings/grades_binding.dart';
+import '../modules/student/grades/view/grades_view.dart';
 import '../modules/student/help/view/help_view.dart';
 import '../modules/student/home/views/home_view.dart';
 import '../modules/student/home/bindings/home_binding.dart';
@@ -150,7 +151,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.GRADES,
-      page: () => GradesMainView(),
+      page: () => GradesView(),
+      binding: GradesBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
 
