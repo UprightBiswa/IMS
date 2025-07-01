@@ -101,4 +101,17 @@ class AppColors {
   static const Color gradeBgLightGreen = Color(0xFFE8F5E9);
   static const Color gradeBgLightOrange = Color(0xFFFFF3E0);
   static const Color gradeBgLightRed = Color(0xFFFFEBEE);
+
+  // Missing colors required by AssignmentSummaryCard and InfoCard
+  static const Color primaryColor = primaryBlue; // Mapping to existing color
+  static const Color accentColor = primaryBlue; // Using primary blue as general accent
+  static const Color textColor = textBlack; // Mapping to existing color
+  static const Color warningBg = warningYellow; // Using existing warning yellow
+  static const Color warningBorder = primaryOrange; // A slightly darker orange for border
+  static const Color secondaryButtonColor = darkBlue; // Example color for secondary button
+  static const Color borderColor = cardBorder; // Re-using existing cardBorder
+  static const Color success = primaryGreen; // Mapping to existing color
+  static const Color warning = warningYellow; // Mapping to existing color
+  static const Color error = dangerRed; // Mapping to existing color
+  static const Color info = accentBlue; // Using accentBlue for info status
 }

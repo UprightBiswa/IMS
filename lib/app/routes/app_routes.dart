@@ -10,6 +10,8 @@ abstract class Routes {
   static const ATTENDANCE = _Paths.ATTENDANCE;
   static const SYLLABUS = _Paths.SYLLABUS;
   static const ASSIGNMENTS = _Paths.ASSIGNMENTS;
+  static const SUBMIT_ASSIGNMENT = _Paths.SUBMIT_ASSIGNMENT;
+  static const ASSIGNMENT_SUBMISSION = _Paths.ASSIGNMENT_SUBMISSION;
   static const TIMETABLE = _Paths.TIMETABLE;
   static const MESSAGES = _Paths.MESSAGES;
   static const EXAMS = _Paths.EXAMS;
@@ -44,6 +46,8 @@ abstract class _Paths {
   static const ATTENDANCE = '/attendance';
   static const SYLLABUS = '/syllabus';
   static const ASSIGNMENTS = '/assignments';
+  static const ASSIGNMENT_SUBMISSION = '/assignment_submission';
+  static const SUBMIT_ASSIGNMENT = '/assignments/submit';
   static const TIMETABLE = '/timetable';
   static const MESSAGES = '/messages';
   static const EXAMS = '/exams';

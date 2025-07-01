@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constrants.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
-import '../modules/student/assingment/view/assingment_main_view.dart';
+import '../modules/student/assingment/bindings/assignment_binding.dart';
+import '../modules/student/assingment/view/assignment_create_new_tab.dart';
+import '../modules/student/assingment/view/assingment_view.dart';
 import '../modules/student/facialAttendance/bindings/facial_attendance_binding.dart';
 import '../modules/student/facialAttendance/views/facial_attendance_view.dart';
 import '../modules/faculty/attendance_management/bindings/faculty_attendance_binding.dart';
@@ -116,37 +118,52 @@ class AppPages {
     ),
     GetPage(
       name: Routes.ASSIGNMENTS,
-      page: () => AssignmentsMainView(),
+      page: () => AssignmentView(),
+      binding: AssignmentBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
+    ),
+    GetPage(
+      // New page definition for the submission screen
+      name: Routes.ASSIGNMENT_SUBMISSION,
+      page: () => AssignmentSubmissionScreen(
+        assignment: Get.arguments,
+      ), // Pass argument
+      binding: AssignmentBinding(), // Re-use the same controller if appropriate
+    ),
+    GetPage(
+      name: Routes.SUBMIT_ASSIGNMENT,
+      page: () =>
+          const AssignmentView(), // Navigates to main Assignment view, then you'd switch to 'New' tab
+      // Or create a dedicated AssignmentSubmissionFormView()
     ),
     GetPage(
       name: Routes.TIMETABLE,
       // page: () => const TimetableView(),
-      page: () => AssignmentsMainView(),
+      page: () => SyllabusView(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
       name: Routes.MESSAGES,
       // page: () => const MessagesView(),
-      page: () => AssignmentsMainView(),
+      page: () => SyllabusView(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
       name: Routes.EXAMS,
       // page: () => const ExamsView(),
-      page: () => AssignmentsMainView(),
+      page: () => SyllabusView(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
       name: Routes.LIBRARY,
       // page: () => const LibraryView(),
-      page: () => AssignmentsMainView(),
+      page: () => SyllabusView(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
       name: Routes.FEES,
       // page: () => const FeesView(),
-      page: () => AssignmentsMainView(),
+      page: () => SyllabusView(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
