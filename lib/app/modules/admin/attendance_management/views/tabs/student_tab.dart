@@ -11,36 +11,6 @@ class StudentTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AttendanceDashboardController controller = Get.find();
-    // final List<Map<String, dynamic>> studentClassData = [
-    //   {
-    //     "CLASS": "B.Sc. 1A",
-    //     "AVG. ATTENDANCE": "82%",
-    //     "STUDENTS ABSENT": 5,
-    //     "TOTAL STUDENTS": 38,
-    //     "STATUS": 0,
-    //   }, // 0: orange
-    //   {
-    //     "CLASS": "B.Com. 2B",
-    //     "AVG. ATTENDANCE": "78%",
-    //     "STUDENTS ABSENT": 9,
-    //     "TOTAL STUDENTS": 47,
-    //     "STATUS": 1,
-    //   }, // 1: green
-    //   {
-    //     "CLASS": "B.Tech. 3C",
-    //     "AVG. ATTENDANCE": "88%",
-    //     "STUDENTS ABSENT": 2,
-    //     "TOTAL STUDENTS": 39,
-    //     "STATUS": 1,
-    //   },
-    //   {
-    //     "CLASS": "BBA 2A",
-    //     "AVG. ATTENDANCE": "59%",
-    //     "STUDENTS ABSENT": 14,
-    //     "TOTAL STUDENTS": 42,
-    //     "STATUS": 2,
-    //   }, // 2: red
-    // ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -50,7 +20,7 @@ class StudentTab extends StatelessWidget {
           } else if (controller.errorMessage.isNotEmpty) {
             return Center(child: Text(controller.errorMessage.value));
           } else if (controller.studentClassSnapshot.isEmpty) {
-            return const Center(child: Text("No faculty data available."));
+            return const Center(child: Text("No student data available."));
           }
 
           return _buildClassAttendanceSnapshot(controller.studentClassSnapshot);
@@ -179,10 +149,10 @@ class StudentTab extends StatelessWidget {
               Table(
                 columnWidths: const {
                   0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(1.5),
-                  3: FlexColumnWidth(1.5),
-                  4: FlexColumnWidth(1.5),
+                  1: FlexColumnWidth(1.4),
+                  2: FlexColumnWidth(1.4),
+                  3: FlexColumnWidth(1.4),
+                  4: FlexColumnWidth(2),
                 },
                 children: [
                   TableRow(
@@ -204,20 +174,37 @@ class StudentTab extends StatelessWidget {
               Table(
                 columnWidths: const {
                   0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(1.5),
-                  3: FlexColumnWidth(1.5),
-                  4: FlexColumnWidth(1.5),
+                  1: FlexColumnWidth(1.4),
+                  2: FlexColumnWidth(1.4),
+                  3: FlexColumnWidth(1.4),
+                  4: FlexColumnWidth(2),
                 },
                 children: data.map((student) {
                   return TableRow(
                     children: [
-                      _buildTableCell(student.className.toString()),
-                      _buildTableCell(student.avgAttendance.toString()),
-                      _buildTableCell(student.studentsBelow75.toString()),
-                      _buildTableCell(student.totalStudents.toString()),
-                      _buildStatusTableCell(student.status),
+                      _buildTableCell(student.className ?? ''),
+                      _buildTableCell(
+                        '${student.avgAttendance?.toStringAsFixed(0) ?? 'N/A'}%',
+                      ), // Format to 0 decimal places and add %
+                      _buildTableCell(
+                        student.studentsBelow75Percent?.toString() ?? 'N/A',
+                      ),
+                      _buildTableCell(
+                        student.totalStudents?.toString() ?? 'N/A',
+                      ),
+                      _buildStatusTableCell(
+                        student.displayStatusText ?? 'N/A',
+                      ), // Use derived status text
                     ],
+                    // children: [
+                    //   _buildTableCell(student.className.toString()),
+                    //   _buildTableCell(student.avgAttendance.toString()),
+                    //   _buildTableCell(
+                    //     student.studentsBelow75Percent.toString(),
+                    //   ),
+                    //   _buildTableCell(student.totalStudents.toString()),
+                    //   _buildStatusTableCell(student.status ?? 'N/A'),
+                    // ],
                   );
                 }).toList(),
               ),
@@ -339,20 +326,127 @@ class StudentTab extends StatelessWidget {
     );
   }
 
-  // Custom cell for status (Student Class, Faculty Overview)
-  static Widget _buildStatusTableCell(String status) {
-    Color bgColor = Colors.grey.withValues(alpha: .1);
-    Color textColor = Colors.black87;
+  // // Custom cell for status (Student Class, Faculty Overview)
+  // static Widget _buildStatusTableCell(String status) {
+  //   Color bgColor = Colors.grey.withValues(alpha: .1);
+  //   Color textColor = Colors.black87;
 
-    if (status.contains("> 85")) {
-      bgColor = AppColors.accentGreen.withValues(alpha: .1);
-      textColor = AppColors.accentGreen;
-    } else if (status.contains("75-84")) {
-      bgColor = AppColors.accentYellow.withValues(alpha: .1);
-      textColor = AppColors.accentYellow;
-    } else if (status.contains("< 75")) {
-      bgColor = AppColors.accentRed.withValues(alpha: .1);
-      textColor = AppColors.accentRed;
+  //   if (status.contains("> 85")) {
+  //     bgColor = AppColors.accentGreen.withValues(alpha: .1);
+  //     textColor = AppColors.accentGreen;
+  //   } else if (status.contains("75-84")) {
+  //     bgColor = AppColors.accentYellow.withValues(alpha: .1);
+  //     textColor = AppColors.accentYellow;
+  //   } else if (status.contains("< 75")) {
+  //     bgColor = AppColors.accentRed.withValues(alpha: .1);
+  //     textColor = AppColors.accentRed;
+  //   }
+
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 4.0),
+  //     child: Align(
+  //       alignment: Alignment.center,
+  //       child: Container(
+  //         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //         decoration: BoxDecoration(
+  //           color: bgColor,
+  //           borderRadius: BorderRadius.circular(4),
+  //         ),
+  //         child: Text(
+  //           status,
+  //           style: TextStyle(
+  //             fontSize: 9,
+  //             color: textColor,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  // Custom cell for status (Student Class, Faculty Overview)
+  // static Widget _buildStatusTableCell(String status) {
+  //   Color bgColor;
+  //   Color textColor;
+  //   String displayStatus = status; // Default to API status string
+
+  //   switch (status) {
+  //     case "good":
+  //       bgColor = AppColors.accentGreen.withOpacity(
+  //         0.1,
+  //       ); // Using withOpacity for a lighter background
+  //       textColor = AppColors.accentGreen;
+  //       displayStatus = "Good"; // Display "Good" instead of "good"
+  //       break;
+  //     case "needs_attention":
+  //       bgColor = AppColors.accentRed.withOpacity(
+  //         0.1,
+  //       ); // Using withOpacity for a lighter background
+  //       textColor = AppColors.accentRed;
+  //       displayStatus = "Needs Attention"; // Display "Needs Attention"
+  //       break;
+  //     default:
+  //       bgColor = Colors.grey.withOpacity(0.1);
+  //       textColor = Colors.black87;
+  //       break;
+  //   }
+
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 4.0),
+  //     child: Align(
+  //       alignment: Alignment.center,
+  //       child: Container(
+  //         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //         decoration: BoxDecoration(
+  //           color: bgColor,
+  //           borderRadius: BorderRadius.circular(4),
+  //         ),
+  //         child: Row(
+  //           // Use Row to place icon and text
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Icon(
+  //               Icons.circle,
+  //               size: 8,
+  //               color: textColor,
+  //             ), // Small circle icon
+  //             const SizedBox(width: 4),
+  //             Text(
+  //               displayStatus, // Use the formatted displayStatus
+  //               style: TextStyle(
+  //                 fontSize: 10,
+  //                 color: textColor,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  // Custom cell for status (Student Class, Faculty Overview)
+  static Widget _buildStatusTableCell(String displayStatusText) {
+    Color bgColor;
+    Color textColor;
+
+    switch (displayStatusText) {
+      case "> 85%":
+        bgColor = AppColors.accentGreen.withOpacity(0.1);
+        textColor = AppColors.accentGreen;
+        break;
+      case "75-84%":
+        bgColor = AppColors.accentYellow.withOpacity(0.1);
+        textColor = AppColors.accentYellow;
+        break;
+      case "< 75%":
+        bgColor = AppColors.accentRed.withOpacity(0.1);
+        textColor = AppColors.accentRed;
+        break;
+      default:
+        bgColor = Colors.grey.withOpacity(0.1);
+        textColor = Colors.black87;
+        break;
     }
 
     return Padding(
@@ -365,13 +459,16 @@ class StudentTab extends StatelessWidget {
             color: bgColor,
             borderRadius: BorderRadius.circular(4),
           ),
-          child: Text(
-            status,
-            style: TextStyle(
-              fontSize: 9,
-              color: textColor,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.circle, size: 8, color: textColor),
+              const SizedBox(width: 4),
+              Text(
+                displayStatusText,
+                style: TextStyle(fontSize: 8, color: textColor),
+              ),
+            ],
           ),
         ),
       ),

@@ -95,6 +95,7 @@ class StudentDashboardTopSection extends StatelessWidget {
   }
 
   Widget _buildStudentDashboardTopSection() {
+    print(controller.studentSummaryCards.length);
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

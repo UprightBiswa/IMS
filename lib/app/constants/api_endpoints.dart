@@ -15,6 +15,12 @@ class ApiEndpoints {
   static const String ADMIN_DASHBOARD_STAFF_MAPP =
       '/api/v1/attendance/dashboard/admin/staff_mapp';
 
+  // {{base_url}}/api/v1/attendance/dashboard/admin/students?academic_year=2025 {{base_url}}/api/v1/attendance/dashboard/admin/student/classwise
+
+  static const String ADMIN_DASHBOARD_STUDENT_MAPP_2 =
+      '/api/v1/attendance/dashboard/admin/students';
+  static const String ADMIN_DASHBOARD_STUDENT_MAPP_3 =
+      '/api/v1/attendance/dashboard/admin/student/classwise';
 
   // Faculty dashboard endpoints
   static const String FACULTY_ATTENDANCE_MAPP =

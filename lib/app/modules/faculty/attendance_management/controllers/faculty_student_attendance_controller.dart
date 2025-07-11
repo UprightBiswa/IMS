@@ -1,3 +1,5 @@
+// lib/app/modules/faculty_student_attendance/controllers/faculty_student_attendance_controller.dart
+
 import 'package:get/get.dart';
 import '../../../../constants/api_endpoints.dart';
 import '../../../../services/api_service.dart';
@@ -8,8 +10,7 @@ class FacultyStudentAttendanceController extends GetxController {
   // overview, classes, students
   final RxInt selectedDashboardTab = 0.obs;
 
-  //overview
-
+  // Overview
   final RxBool isLoading = true.obs;
   final RxBool isError = false.obs;
   final RxString errorMessage = ''.obs;
@@ -25,6 +26,17 @@ class FacultyStudentAttendanceController extends GetxController {
 
   final RxList<StudentBasicInfo> studentList = <StudentBasicInfo>[].obs;
 
+  // Filter properties for student-wise attendance
+  final RxList<String> departmentFilters = <String>[].obs; // To store available department names
+  final RxnString selectedDepartmentFilter = RxnString(); // Selected department
+  final RxList<String> courseFilters = <String>[].obs; // To store available course names
+  final RxnString selectedCourseFilter = RxnString(); // Selected course
+  final RxList<String> semesterFilters = <String>[].obs; // To store available semester names
+  final RxnString selectedSemesterFilter = RxnString(); // Selected semester
+  final RxList<String> attendanceStatusFilters = ['All', 'Present', 'Absent', 'Late', 'Excused', 'Low Attendance'].obs;
+  final RxString selectedAttendanceStatusFilter = 'All'.obs; // Selected attendance status
+
+  // For Mark UI (existing)
   final RxList<String> courses = ['B.Sc Physics', 'B.Com', 'B.Tech', 'BBA'].obs;
   final RxString selectedCourse = 'B.Sc Physics'.obs;
   final RxList<String> sections = ['Section A', 'D', 'C'].obs; // Dummy sections
@@ -65,8 +77,7 @@ class FacultyStudentAttendanceController extends GetxController {
     super.onInit();
     // Initialize data for mark attendance tab
     fetchStudentAttendanceDashboard();
-    fetchStudentAttendanceDashboardforStudent();
-    filterStudentsForMarking();
+    fetchStudentWiseAttendance(); // Fetch student-wise attendance on init
   }
 
   void changeStudentSubTab(int index) {
@@ -77,12 +88,132 @@ class FacultyStudentAttendanceController extends GetxController {
     selectedDashboardTab.value = index;
   }
 
-  // --- Mark Attendance Methods ---
+  // --- Filter methods for student-wise attendance ---
+  void selectDepartmentFilter(String? department) {
+    if (department != null) {
+      selectedDepartmentFilter.value = department;
+      fetchStudentWiseAttendance();
+    }
+  }
+
+  void selectCourseFilter(String? course) {
+    if (course != null) {
+      selectedCourseFilter.value = course;
+      fetchStudentWiseAttendance();
+    }
+  }
+
+  void selectSemesterFilter(String? semester) {
+    if (semester != null) {
+      selectedSemesterFilter.value = semester;
+      fetchStudentWiseAttendance();
+    }
+  }
+
+  void selectAttendanceStatusFilter(String? status) {
+    if (status != null) {
+      selectedAttendanceStatusFilter.value = status;
+      fetchStudentWiseAttendance();
+    }
+  }
+
+
+  // --- API Calls ---
+  Future<void> fetchStudentAttendanceDashboard() async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+      errorMessage.value = '';
+
+      final response = await ApiService().get(
+        ApiEndpoints.FACULTY_STUDENT_ATTENDANCE_DASHBOARD_MAPP,
+      );
+
+      final data = response.data['data']['faculty_data'];
+
+      overallSummary.value =
+          OverallStudentAttendanceSummary.fromJson(data['overall_attendance']);
+
+      classSnapshots.value = (data['class_wise_attendance'] as List)
+          .map((e) => ClassAttendanceSnapshot.fromJson(e))
+          .toList();
+
+      recentClasses.value = (data['recent_classes'] as List)
+          .map((e) => RecentClass.fromJson(e))
+          .toList();
+    } catch (e) {
+      isError.value = true;
+      errorMessage.value = 'Error: ${e.toString()}';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchStudentWiseAttendance({int? departmentId}) async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+      errorMessage.value = '';
+
+      // Construct query parameters based on selected filters
+      final Map<String, dynamic> queryParams = {};
+      if (departmentId != null) {
+        queryParams['department_id'] = departmentId;
+      }
+      if (selectedCourseFilter.value != null && selectedCourseFilter.value != 'All') {
+        // You'll need a way to map course names to IDs if your API expects IDs
+        queryParams['course_id'] = selectedCourseFilter.value; // Placeholder
+      }
+      if (selectedSemesterFilter.value != null && selectedSemesterFilter.value != 'All') {
+        // You'll need a way to map semester names to IDs if your API expects IDs
+        queryParams['semester_id'] = selectedSemesterFilter.value; // Placeholder
+      }
+      if (selectedAttendanceStatusFilter.value != 'All') {
+        queryParams['attendance_filter'] = selectedAttendanceStatusFilter.value.toLowerCase();
+      }
+
+      final response = await ApiService().get(
+        ApiEndpoints.FACULTY_STUDENTWISE_ATTENDANCE_MAPP,
+        queryParameters: queryParams,
+      );
+
+      final studentData = response.data['data']['student_data'];
+      final List<dynamic> studentsJson = studentData['student_wise_attendance'];
+      final Map<String, dynamic> filterInfo = studentData['filter_info'];
+      final Map<String, dynamic> contextInfo = studentData['context_info'];
+
+
+      studentList.value =
+          studentsJson.map((e) => StudentBasicInfo.fromJson(e)).toList();
+
+      // Populate filter options from API response (if available in filter_info or metadata)
+      // This is a simplified example. In a real app, you'd likely have separate API endpoints for filter options.
+      if (contextInfo['department'] != null && contextInfo['department']['department_name'] != null) {
+        departmentFilters.value = [contextInfo['department']['department_name']];
+        // Set the selected department to the one returned by the API
+        selectedDepartmentFilter.value = contextInfo['department']['department_name'];
+      } else {
+         departmentFilters.value = ['Computer Science', 'Physics', 'Mathematics', 'Chemistry']; // Dummy options
+         selectedDepartmentFilter.value = departmentFilters.first;
+      }
+      // Assuming 'courses' and 'semesters' arrays might be in filter_info or another endpoint
+      courseFilters.value = ['All', 'Physics I', 'Mathematics I', 'Database Systems', 'Programming Fundamentals']; // Dummy options
+      semesterFilters.value = ['All', 'Semester 1', 'Semester 2']; // Dummy options
+
+
+    } catch (e) {
+      isError.value = true;
+      errorMessage.value = 'Error fetching students: ${e.toString()}';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
+  // --- Mark Attendance Methods (existing) ---
   void selectCourse(String? course) {
     if (course != null) {
       selectedCourse.value = course;
-      // In a real app, you'd fetch sections/subjects based on course
-      // For dummy, just reset other selections
       selectedSubject.value = subjects.first;
       selectedSubSubject.value = '';
       filterStudentsForMarking();
@@ -113,7 +244,7 @@ class FacultyStudentAttendanceController extends GetxController {
 
   void selectMarkAttendanceDate(DateTime date) {
     markAttendanceDate.value = date;
-    filterStudentsForMarking(); // Re-fetch students based on new date
+    filterStudentsForMarking();
   }
 
   void toggleShowPreviousAttendance(bool? value) {
@@ -200,54 +331,5 @@ class FacultyStudentAttendanceController extends GetxController {
         .toList();
 
     studentRecords.value = filteredList;
-  }
-
-  Future<void> fetchStudentAttendanceDashboard() async {
-    try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
-
-      final response = await ApiService().get(
-        ApiEndpoints.FACULTY_STUDENT_ATTENDANCE_DASHBOARD_MAPP,
-      );
-
-      final data = response.data['data']['faculty_data'];
-
-      overallSummary.value = OverallStudentAttendanceSummary.fromJson(
-        data['overall_attendance'],
-      );
-
-      classSnapshots.value = (data['class_wise_attendance'] as List)
-          .map((e) => ClassAttendanceSnapshot.fromJson(e))
-          .toList();
-
-      recentClasses.value = (data['recent_classes'] as List)
-          .map((e) => RecentClass.fromJson(e))
-          .toList();
-    } catch (e) {
-      isError.value = true;
-      errorMessage.value = 'Error: ${e.toString()}';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> fetchStudentAttendanceDashboardforStudent() async {
-    try {
-      isLoading.value = true;
-      final response = await ApiService().get(
-        ApiEndpoints.FACULTY_STUDENTWISE_ATTENDANCE_MAPP,
-      );
-      final students = response.data['data']['faculty_data'] as List;
-      studentList.value = students
-          .map((e) => StudentBasicInfo.fromJson(e))
-          .toList();
-    } catch (e) {
-      errorMessage.value = 'Error fetching students: $e';
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
-    }
   }
 }

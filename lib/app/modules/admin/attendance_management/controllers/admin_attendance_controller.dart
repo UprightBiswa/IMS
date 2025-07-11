@@ -13,14 +13,13 @@ class AttendanceDashboardController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
-  final RxList<StudentClassSnapshotModel> studentClassSnapshot =
-      <StudentClassSnapshotModel>[].obs;
 
   final RxList<SummaryCardModel> studentSummaryCards = <SummaryCardModel>[].obs;
 
   final RxList<SummaryCardModel> facultySummaryCards = <SummaryCardModel>[].obs;
   final RxList<SummaryCardModel> staffSummaryCards = <SummaryCardModel>[].obs;
-
+  final RxList<StudentClassSnapshotModel> studentClassSnapshot =
+      <StudentClassSnapshotModel>[].obs;
   final RxList<FacultyOverviewModel> facultyData = <FacultyOverviewModel>[].obs;
   final RxList<StaffOverviewModel> staffData = <StaffOverviewModel>[].obs;
   void changeTab(int index) {
@@ -30,7 +29,7 @@ class AttendanceDashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // fetchStudentOverview();
+    fetchStudentOverview();
     fetchFacultyOverview();
     fetchStaffOverview();
   }
@@ -39,56 +38,161 @@ class AttendanceDashboardController extends GetxController {
   //   isLoading.value = true;
   //   errorMessage.value = '';
   //   try {
-  //     final response = await ApiService().get(
-  //       ApiEndpoints.ADMIN_DASHBOARD_STUDENT_MAPP,
+  //     final summaryResponse = await ApiService().get(
+  //       ApiEndpoints.ADMIN_DASHBOARD_STUDENT_MAPP_2,
+  //       queryParameters: {'academic_year': DateTime.now().year.toString()},
   //     );
-  //     final data = response.data['data']['student_data'];
-
-  //     // Parse class snapshot list
-  //     final List snapshotList = data['class_attendance_snapshot'];
-  //     studentClassSnapshot.value = snapshotList
-  //         .map((e) => StudentClassSnapshotModel.fromJson(e))
-  //         .toList();
-
-  //     // Summary cards
-  //     final summary = data['summary'];
+  //     final summary = summaryResponse.data['data']['summary'];
+  //     // Populate student summary cards based on the actual 'summary' data available
   //     studentSummaryCards.value = [
   //       SummaryCardModel(
   //         title: "Total Students",
-  //         value: summary['total_students'].toString(),
-  //         subtitle: "Across ${summary['total_classes']} classes",
+  //         value: summary['total_students']?.toString() ?? '0',
+  //         subtitle: "Across all classes", // Adjusted subtitle
   //         icon: Icons.people_alt_outlined,
   //         backgroundColor: const Color(0xFFF6FAFE),
   //       ),
   //       SummaryCardModel(
-  //         title: "Today's Attendance",
-  //         value: "${summary['total_attendance_today_percentage']}%",
-  //         subtitle: "${summary['total_students_present_today']} present",
-  //         icon: Icons.calendar_today_outlined,
-  //         backgroundColor: const Color(0xFFF7FDF9),
-  //       ),
-  //       SummaryCardModel(
-  //         title: "Absent Students",
-  //         value: summary['absent_students_today'].toString(),
-  //         subtitle: "${summary['absent_students_today_percentage']}% of total",
-  //         icon: Icons.person_off_outlined,
+  //         title: "Students Below 75% Att.",
+  //         value: summary['students_below_75']?.toString() ?? '0',
+  //         subtitle: "Needs attention",
+  //         icon: Icons.warning_amber_outlined,
   //         backgroundColor: const Color(0xFFFEF8F8),
   //       ),
   //       SummaryCardModel(
-  //         title: "Weekly Attendance",
-  //         value: "${summary['weekly_attendance_percentage']}%",
-  //         subtitle: "",
-  //         icon: Icons.favorite_outline,
+  //         title: "Students 75-85% Att.",
+  //         value: summary['students_75_85']?.toString() ?? '0',
+  //         subtitle: "Good standing",
+  //         icon: Icons.leaderboard_outlined, // Changed icon
+  //         backgroundColor: const Color(0xFFF7FDF9),
+  //       ),
+  //       SummaryCardModel(
+  //         title: "Students Above 85% Att.",
+  //         value: summary['students_above_85']?.toString() ?? '0',
+  //         subtitle: "Excellent attendance",
+  //         icon: Icons.star_outline,
   //         backgroundColor: const Color(0xFFF6F8FE),
-  //         progressValue: summary['weekly_attendance_percentage'] / 100,
   //       ),
   //     ];
+  //     // studentSummaryCards.value = [
+  //     //   SummaryCardModel(
+  //     //     title: "Total Students",
+  //     //     value: summary['total_students'].toString(),
+  //     //     subtitle: "Across ${summary['total_classes']} classes",
+  //     //     icon: Icons.people_alt_outlined,
+  //     //     backgroundColor: const Color(0xFFF6FAFE),
+  //     //   ),
+  //     //   SummaryCardModel(
+  //     //     title: "Today's Attendance",
+  //     //     value: "${summary['total_attendance_today_percentage']}%",
+  //     //     subtitle: "${summary['total_students_present_today']} present",
+  //     //     icon: Icons.calendar_today_outlined,
+  //     //     backgroundColor: const Color(0xFFF7FDF9),
+  //     //   ),
+  //     //   SummaryCardModel(
+  //     //     title: "Absent Students",
+  //     //     value: summary['absent_students_today'].toString(),
+  //     //     subtitle: "${summary['absent_students_today_percentage']}% of total",
+  //     //     icon: Icons.person_off_outlined,
+  //     //     backgroundColor: const Color(0xFFFEF8F8),
+  //     //   ),
+  //     //   SummaryCardModel(
+  //     //     title: "Weekly Attendance",
+  //     //     value: "${summary['weekly_attendance_percentage']}%",
+  //     //     subtitle: "",
+  //     //     icon: Icons.favorite_outline,
+  //     //     backgroundColor: const Color(0xFFF6F8FE),
+  //     //     progressValue: summary['weekly_attendance_percentage'] / 100,
+  //     //   ),
+  //     // ];
+
+  //     // Parse class snapshot list
+  //     // final List snapshotList = data['class_attendance_snapshot'];
+  //     // studentClassSnapshot.value = snapshotList
+  //     //     .map((e) => StudentClassSnapshotModel.fromJson(e))
+  //     //     .toList();
+
+  //     final classSnapshotResponse = await ApiService().get(
+  //       ApiEndpoints.ADMIN_DASHBOARD_STUDENT_MAPP_3,
+  //     );
+  //     // Access 'data' then 'classes' as per the second JSON structure
+  //     final List classList = classSnapshotResponse.data['data']['classes'];
+
+  //     // Map JSON to StudentClassSnapshotModel
+  //     studentClassSnapshot.value = classList
+  //         .map((e) => StudentClassSnapshotModel.fromJson(e))
+  //         .toList();
   //   } catch (e) {
-  //     errorMessage.value = e.toString();
+  //     errorMessage.value = 'error here${e.toString()}';
   //   } finally {
   //     isLoading.value = false;
   //   }
   // }
+  Future<void> fetchStudentOverview() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final response = await ApiService().get(
+        ApiEndpoints.ADMIN_DASHBOARD_STUDENT_MAPP,
+        // Assuming academic_year filter is handled by the API itself or not needed for this specific endpoint
+        // queryParameters: {'academic_year': DateTime.now().year.toString()},
+      );
+
+      final data = response.data['data'];
+
+      // Parse section1_summary for summary cards
+      final section1Summary = data['section1_summary'];
+      final classPerformance = section1Summary['class_performance'];
+      final todaysAttendance = section1Summary['todays_attendance'];
+      final totalStudents = section1Summary['total_students'];
+      final weeklyAttendance = section1Summary['weekly_attendance'];
+
+      studentSummaryCards.value = [
+        SummaryCardModel(
+          title: "Total Students",
+          value: totalStudents?.toString() ?? '0',
+          subtitle: "Across all classes",
+          icon: Icons.people_alt_outlined,
+          backgroundColor: const Color(0xFFF6FAFE),
+        ),
+        SummaryCardModel(
+          title: "Today's Attendance",
+          value: "${todaysAttendance['percentage']?.toString() ?? '0'}%",
+          subtitle: "${todaysAttendance['present']?.toString() ?? '0'} present",
+          icon: Icons.calendar_today_outlined,
+          backgroundColor: const Color(0xFFF7FDF9),
+        ),
+        SummaryCardModel(
+          title: "Absent Today",
+          value: todaysAttendance['absent']?.toString() ?? '0',
+          subtitle: "From today's sessions",
+          icon: Icons.person_off_outlined,
+          backgroundColor: const Color(0xFFFEF8F8),
+        ),
+        SummaryCardModel(
+          title: "Weekly Attendance",
+          value: "${weeklyAttendance['percentage']?.toString() ?? '0'}%",
+          subtitle: "", // No specific subtitle provided in the JSON for this
+          icon: Icons.favorite_outline,
+          backgroundColor: const Color(0xFFF6F8FE),
+          progressValue: (weeklyAttendance['percentage'] != null)
+              ? (weeklyAttendance['percentage'] / 100)
+              : 0.0,
+        ),
+      ];
+
+      // Parse section2_class_snapshot for class snapshot table
+      final List section2ClassSnapshotList = data['section2_class_snapshot'];
+      studentClassSnapshot.value = section2ClassSnapshotList
+          .map((e) => StudentClassSnapshotModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      errorMessage.value = 'Error fetching student overview: ${e.toString()}';
+      print(errorMessage.value); // For debugging
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   Future<void> fetchFacultyOverview() async {
     isLoading.value = true;
