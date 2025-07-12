@@ -201,50 +201,57 @@ class AttendanceDashboardController extends GetxController {
       final response = await ApiService().get(
         ApiEndpoints.ADMIN_DASHBOARD_FACULTY_MAPP,
       );
-      final data = response.data['data']['faculty_data'];
+      final data = response.data['data'];
 
-      // Attendance data
-      final List overviewList = data['faculty_attendance_overview'];
+      // Parse faculty_data list
+      final List overviewList =
+          data['faculty_data']; // Access 'faculty_data' list
       facultyData.value = overviewList
           .map((e) => FacultyOverviewModel.fromJson(e))
           .toList();
 
-      // Summary
-      final summary = data['summary'];
+      // Parse summary_result
+      final summary = data['summary_result'];
       facultySummaryCards.value = [
         SummaryCardModel(
           title: "Total Faculty",
-          value: summary['total_faculty'].toString(),
-          subtitle: "Across 6 departments",
+          value: summary['total_faculty']?.toString() ?? '0',
+          subtitle: "Across departments", // Adjusted subtitle
           icon: Icons.business_center_outlined,
           backgroundColor: const Color(0xFFF6FAFE),
         ),
         SummaryCardModel(
           title: "Classes Today",
-          value: summary['classes_today'].toString(),
-          subtitle: "Above 95%",
+          value: summary['classes_today']?.toString() ?? '0',
+          subtitle: "Scheduled today", // Adjusted subtitle
           icon: Icons.school_outlined,
           backgroundColor: const Color(0xFFF7FDF9),
         ),
         SummaryCardModel(
           title: "Attendance Marked",
-          value: summary['attendance_marked'].toString(),
+          value: summary['attendance_marked']?.toString() ?? '0',
           subtitle:
-              "${summary['classes_today'] - summary['attendance_marked']} classes pending",
+              "${(summary['classes_today'] ?? 0) - (summary['attendance_marked'] ?? 0)} classes pending",
           icon: Icons.check_circle_outline,
           backgroundColor: const Color(0xFFF7FDF9),
         ),
         SummaryCardModel(
           title: "Daily Compliance",
-          value: "${summary['todays_progress_perntage']}%",
+          value:
+              "${(summary['todays_progress_percentage'] as num?)?.toStringAsFixed(0) ?? '0'}%",
           subtitle: "Today's Progress",
           icon: Icons.calendar_view_day_outlined,
           backgroundColor: const Color(0xFFF6F8FE),
-          progressValue: summary['todays_progress_perntage'] / 100,
+          progressValue:
+              (summary['todays_progress_percentage'] as num?)?.toDouble() !=
+                  null
+              ? (summary['todays_progress_percentage'] as num).toDouble() / 100
+              : 0.0,
         ),
       ];
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Error fetching faculty overview: ${e.toString()}';
+      print(errorMessage.value); // For debugging
     } finally {
       isLoading.value = false;
     }
