@@ -4,9 +4,11 @@ class ApiEndpoints {
   static const String PROFILE = '/api/v1/profile';
 
   // Example student endpoints
-  static const String STUDENT_ATTENDANCE = '/student/attendance';
-  static const String STUDENT_LEAVE_REQUEST = '/student/leave-request';
+  // static const String STUDENT_ATTENDANCE = '/student/attendance';
+  // static const String STUDENT_LEAVE_REQUEST = '/student/leave-request';
 
+  // Student Attendance Dashboard API
+  static const String STUDENT_ATTENDANCE_DASHBOARD = '/api/v1/attendance/student/dashboard';
   // Example admin endpoints
   static const String ADMIN_DASHBOARD_STUDENT_MAPP =
       '/api/v1/attendance/dashboard/admin/students_mapp';

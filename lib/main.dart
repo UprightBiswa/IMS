@@ -50,10 +50,16 @@ class MyApp extends StatelessWidget {
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,
         builder: (context, child) {
-          return SafeArea(
-            top: false,
-            bottom: true,
-            child: child ?? const SizedBox(),
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.noScaling,
+              platformBrightness: Brightness.light,
+            ),
+            child: SafeArea(
+              top: false,
+              bottom: true,
+              child: child ?? const SizedBox(),
+            ),
           );
         },
       ),

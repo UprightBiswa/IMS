@@ -20,7 +20,6 @@ class ProfileView extends GetView<ProfileController> {
       // Profile content
       body: Obx(() {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
             CircleAvatar(
@@ -36,6 +35,10 @@ class ProfileView extends GetView<ProfileController> {
             Text(controller.userName, style: const TextStyle(fontSize: 18)),
             Text(
               controller.userEmail,
+              style: const TextStyle(color: Colors.grey),
+            ),
+            Text(
+              authController.currentUser.value!.id,
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),

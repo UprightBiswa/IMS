@@ -1,46 +1,84 @@
 import 'package:attendance_demo/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+import '../controllers/student_attendance_controller.dart';
+import '../models/subjectwise_attendance_model.dart';
 
 class Last17DaysAttendanceChart extends StatelessWidget {
   const Last17DaysAttendanceChart({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AttendanceCard(),
-        const SizedBox(height: 16),
-        Center(
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+    final StudentAttendanceController controller = Get.find();
+
+    return Obx(() {
+      if (controller.dayWiseAttendanceList.isEmpty) {
+        return const Center(
+          child: Text("No daily attendance data available for chart."),
+        );
+      }
+
+      // Get the last 17 days
+      final List<DailyAttendanceData> last17Days =
+          controller.dayWiseAttendanceList.length > 17
+          ? controller.dayWiseAttendanceList.sublist(
+              controller.dayWiseAttendanceList.length - 17,
+            )
+          : controller.dayWiseAttendanceList;
+
+      // Determine date range for display
+      String startDate = '';
+      String endDate = '';
+      if (last17Days.isNotEmpty) {
+        startDate = DateFormat('MMM d').format(last17Days.first.date);
+        endDate = DateFormat('MMM d').format(last17Days.last.date);
+      }
+
+      return Column(
+        children: [
+          AttendanceCard(
+            attendanceData: last17Days,
+            startDate: startDate,
+            endDate: endDate,
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                  color: AppColors.secondaryTextGray.withValues(alpha: .20),
+                  width: 1,
+                ),
               ),
-              backgroundColor: Colors.white,
-              side: BorderSide(
-                color: AppColors.secondaryTextGray.withValues(alpha: .20),
-                width: 1,
-              ),
-            ),
-            icon: const Icon(
-              Icons.download,
-              size: 16,
-              color: AppColors.secondaryTextGray,
-            ),
-            onPressed: () {},
-            label: const Text(
-              "Download Attendance Report",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+              icon: const Icon(
+                Icons.download,
+                size: 16,
                 color: AppColors.secondaryTextGray,
               ),
-            ), // style: TextStyle(fontSize: 12),
+              onPressed: () {},
+              label: const Text(
+                "Download Attendance Report",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.secondaryTextGray,
+                ),
+              ), // style: TextStyle(fontSize: 12),
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }
 
@@ -52,30 +90,23 @@ class AttendanceDay {
 }
 
 class AttendanceCard extends StatelessWidget {
-  AttendanceCard({super.key});
+  final List<DailyAttendanceData> attendanceData;
+  final String startDate;
+  final String endDate;
 
-  // Define attendance data.
-  // 0: Absent (Red)
-  // 1: Present (Green)
-  // 2: Late/Half-day (Orange)
-  final List<int> attendanceData = [
-    1, 1, 1, 1, 0, // Days 1-5
-    -1, -1, // Days 6-7 (No data/empty in the image, represented as -1)
-    1, 2, 1, 1, 1, // Days 8-12
-    -1, -1, // Days 13-14
-    0, 1, 1, // Days 15-17
-  ];
-
-  Color getBarColor(int status) {
-    switch (status) {
-      case 1:
-        return Colors.teal; // Green-like color from the image
-      case 0:
-        return Colors.red[300]!; // Red-like color from the image
-      case 2:
-        return Colors.orange; // Orange color from the image
-      default:
-        return Colors.transparent; // For empty days
+  const AttendanceCard({
+    super.key,
+    required this.attendanceData,
+    required this.startDate,
+    required this.endDate,
+  });
+  Color getBarColor(double percentage) {
+    if (percentage >= 75) {
+      return Colors.teal; // Green-like color for good attendance
+    } else if (percentage > 0) {
+      return Colors.orange; // Orange for some attendance but below threshold
+    } else {
+      return Colors.red[300]!; // Red for 0% attendance
     }
   }
 
@@ -106,51 +137,67 @@ class AttendanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           // Bar Chart Section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment:
-                CrossAxisAlignment.end, // Align bars at the bottom
-            children: List.generate(17, (index) {
-              final day = index + 1;
-              final attendanceStatus = attendanceData.length > index
-                  ? attendanceData[index]
-                  : -1;
-              final barColor = getBarColor(attendanceStatus);
-              final barHeight = attendanceStatus != -1
-                  ? 50.0
-                  : 0.0; // Height for actual bars
+          // Bar Chart Section
+          SizedBox(
+            height: 100, // Fixed height for the chart area
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment:
+                  CrossAxisAlignment.end, // Align bars at the bottom
+              children: List.generate(attendanceData.length, (index) {
+                final data = attendanceData[index];
+                final barColor = getBarColor(data.percentage);
+                final barHeight =
+                    data.percentage *
+                    0.5; // Scale percentage to height (max 50)
+                final dayLabel = DateFormat(
+                  'd',
+                ).format(data.date); // Just the day number
 
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8, // Width of each bar
-                    height: barHeight,
-                    decoration: BoxDecoration(
-                      color: barColor,
-                      borderRadius: BorderRadius.circular(
-                        2,
-                      ), // Slightly rounded tops for bars
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      // Allow bars to take available height
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: 8, // Width of each bar
+                          height: barHeight.clamp(
+                            5.0,
+                            50.0,
+                          ), // Ensure min height for visibility
+                          decoration: BoxDecoration(
+                            color: barColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4), // Space between bar and day number
-                  Text(
-                    '$day',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              );
-            }),
+                    const SizedBox(
+                      height: 4,
+                    ), // Space between bar and day number
+                    Text(
+                      dayLabel,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                );
+              }),
+            ),
           ),
           const SizedBox(height: 20),
           // Date Range Section
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('May 1', style: TextStyle(fontSize: 14, color: Colors.grey)),
               Text(
-                'May 17',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                startDate,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              Text(
+                endDate,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],
           ),

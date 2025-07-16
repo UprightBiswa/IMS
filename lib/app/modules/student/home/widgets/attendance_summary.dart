@@ -101,8 +101,8 @@ class SummaryPersentage extends StatelessWidget {
             value: value / 100, // 82%
             strokeWidth: 6,
             backgroundColor: Colors.grey.shade200,
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AppColors.primaryBlue,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              value >= 75 ? AppColors.primaryBlue : AppColors.accentRed,
             ),
           ),
         ),
@@ -116,15 +116,24 @@ class SummaryPersentage extends StatelessWidget {
                 color: AppColors.textBlack,
               ),
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Good",
-                  style: TextStyle(color: AppColors.primaryBlue, fontSize: 12),
+                  value >= 75 ? 'Good' : 'Needs Attention',
+                  style: TextStyle(
+                    color: value >= 75
+                        ? AppColors.primaryBlue
+                        : AppColors.accentRed,
+                    fontSize: 10,
+                  ),
                 ),
                 SizedBox(width: 4),
-                Icon(Icons.check_circle, color: Colors.green, size: 14),
+                Icon(
+                  value >= 75 ? Icons.check_circle : Icons.error,
+                  color: value >= 75 ? Colors.green : Colors.red,
+                  size: 14,
+                ),
               ],
             ),
           ],

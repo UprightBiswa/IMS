@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/student_attendance_controller.dart';
 import '../widgets/attendance_summy_card.dart';
 import '../widgets/last_17_days_attendance_chart.dart';
 import '../widgets/recommendad_action_card.dart';
@@ -9,6 +11,7 @@ class AttendanceOverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(StudentAttendanceController());
     return ListView(
       padding: const EdgeInsets.all(16),
       children: const [
