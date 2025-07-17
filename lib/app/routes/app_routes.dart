@@ -28,7 +28,9 @@ abstract class Routes {
   static const HELP = _Paths.HELP;
 
   // Admin Routes
-  static const ADMIN_ATTENDANCE = '/admin-attendance';
+  static const ADMIN_ATTENDANCE = _Paths.ADMIN_ATTENDANCE;
+  static const ADMIN_LEAVE_MANAGEMENT =
+      _Paths.ADMIN_LEAVE_MANAGEMENT; // NEW ROUTE
 
   // FACULTY_ATTENDANCE
   static const FACULTY_ATTENDANCE = '/faculty-attendance';
@@ -62,4 +64,8 @@ abstract class _Paths {
   static const SEND_FEEDBACK = '/settings/send_feedback';
   static const ABOUT_APP = '/settings/about_app';
   static const HELP = '/help';
+
+  //admin
+  static const ADMIN_ATTENDANCE = '/admin-attendance';
+  static const ADMIN_LEAVE_MANAGEMENT = '/admin-leave-management'; // NEW ROUTE
 }

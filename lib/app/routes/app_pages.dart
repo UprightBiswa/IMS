@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constrants.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
+import '../modules/admin/leave_management/bindings/admin_leave_binding.dart';
+import '../modules/admin/leave_management/views/admin_leave_management_view.dart';
 import '../modules/student/assingment/bindings/assignment_binding.dart';
 import '../modules/student/assingment/view/assignment_create_new_tab.dart';
 import '../modules/student/assingment/view/assingment_view.dart';
@@ -196,6 +198,13 @@ class AppPages {
     GetPage(
       name: Routes.ADMIN_ATTENDANCE,
       page: () => AdminAttendancePage(),
+      middlewares: [RouteProtectionMiddleware(requiredRole: 'admin')],
+    ),
+
+     GetPage( // NEW ADMIN LEAVE MANAGEMENT ROUTE
+      name: Routes.ADMIN_LEAVE_MANAGEMENT,
+      page: () => const AdminLeaveManagementView(),
+      binding: AdminLeaveBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'admin')],
     ),
 

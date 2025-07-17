@@ -1,6 +1,7 @@
 import 'package:attendance_demo/app/modules/admin/attendance_management/models/student_class_snap_shot_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../../routes/app_routes.dart';
 import '../../../../../theme/app_colors.dart';
 import '../../controllers/admin_attendance_controller.dart';
 import '../../widgets/trend_analysis_chart.dart';
@@ -88,6 +89,8 @@ class StudentTab extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       // Handle filter action
+                      // ADMIN_LEAVE_MANAGEMENT
+                      Get.to(() => Routes.ADMIN_LEAVE_MANAGEMENT);
                     },
                     child: Container(
                       height: 20,

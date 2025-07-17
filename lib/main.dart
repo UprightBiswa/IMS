@@ -12,8 +12,17 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(defaultOverlay);
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  //error for web
+  if (Platform.isAndroid) {
+    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    );
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    SystemChrome.setSystemUIOverlayStyle(defaultOverlay);
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   if (Platform.isAndroid) {
     final androidVersion = int.parse(
       Platform.version.split(' ').first.split('.').first,
@@ -39,7 +48,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus();
+        if (Platform.isAndroid || Platform.isIOS) {
+          FocusScope.of(context).unfocus();
+        }
       },
       child: GetMaterialApp(
         title: "Attendance Management System",
