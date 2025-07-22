@@ -18,79 +18,81 @@ class CustomDrawer extends GetView<ProfileController> {
         child: Container(
           color: const Color(0xFF0076F9), // Blue background
           padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Profile Header
-              GestureDetector(
-                onTap: onProfileTap,
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundImage: controller.userPhotoUrl.isNotEmpty
-                          ? NetworkImage(controller.userPhotoUrl)
-                          : null,
-                      child: controller.userPhotoUrl.isEmpty
-                          ? const Icon(Icons.person, size: 16)
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          controller.userName,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile Header
+                GestureDetector(
+                  onTap: onProfileTap,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundImage: controller.userPhotoUrl.isNotEmpty
+                            ? NetworkImage(controller.userPhotoUrl)
+                            : null,
+                        child: controller.userPhotoUrl.isEmpty
+                            ? const Icon(Icons.person, size: 16)
+                            : null,
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            controller.userName,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Btech-123',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Text(
+                            'Btech-123',
+                            style: TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'MAIN NAVIGATION',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-              const SizedBox(height: 16),
-
-              // Main Items
-              _drawerItem('Home', () => Get.offAllNamed(Routes.HOME)),
-              _drawerItem('Attendance', () => Get.toNamed(Routes.ATTENDANCE)),
-              _drawerItem('Timetable', () => Get.toNamed(Routes.TIMETABLE)),
-              _drawerItem('Assignments', () => Get.toNamed(Routes.ASSIGNMENTS)),
-              _drawerItem('Announcement', () => Get.toNamed(Routes.MESSAGES)),
-              _drawerItem('Syllabus', () => Get.toNamed(Routes.SYLLABUS)),
-              _drawerItem('Library', () => Get.toNamed(Routes.LIBRARY)),
-              _drawerItem('Fees', () => Get.toNamed(Routes.FEES)),
-              _drawerItem('Grades', () => Get.toNamed(Routes.GRADES)),
-              _drawerItem(
-                'Faculty',
-                () => Get.toNamed(Routes.FACULTY_ATTENDANCE),
-              ),
-
-              const Divider(color: Colors.white54, height: 32),
-
-              const Text(
-                'ADDITIONAL OPTIONS',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-              const SizedBox(height: 16),
-              _drawerItem(
-                'Facial Attendance',
-                () => Get.toNamed(Routes.FACIAL_ATTENDANCE),
-              ),
-              _drawerItem('Settings', () => Get.toNamed(Routes.SETTINGS)),
-              _drawerItem('Help', () => Get.toNamed(Routes.HELP)),
-            ],
+                const SizedBox(height: 32),
+                const Text(
+                  'MAIN NAVIGATION',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+                const SizedBox(height: 16),
+            
+                // Main Items
+                _drawerItem('Home', () => Get.offAllNamed(Routes.HOME)),
+                _drawerItem('Attendance', () => Get.toNamed(Routes.ATTENDANCE)),
+                _drawerItem('Timetable', () => Get.toNamed(Routes.TIMETABLE)),
+                _drawerItem('Assignments', () => Get.toNamed(Routes.ASSIGNMENTS)),
+                _drawerItem('Announcement', () => Get.toNamed(Routes.MESSAGES)),
+                _drawerItem('Syllabus', () => Get.toNamed(Routes.SYLLABUS)),
+                _drawerItem('Library', () => Get.toNamed(Routes.LIBRARY)),
+                _drawerItem('Fees', () => Get.toNamed(Routes.FEES)),
+                _drawerItem('Grades', () => Get.toNamed(Routes.GRADES)),
+                _drawerItem(
+                  'Faculty',
+                  () => Get.toNamed(Routes.FACULTY_ATTENDANCE),
+                ),
+            
+                const Divider(color: Colors.white54, height: 32),
+            
+                const Text(
+                  'ADDITIONAL OPTIONS',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+                const SizedBox(height: 16),
+                _drawerItem(
+                  'Facial Attendance',
+                  () => Get.toNamed(Routes.FACIAL_ATTENDANCE),
+                ),
+                _drawerItem('Settings', () => Get.toNamed(Routes.SETTINGS)),
+                _drawerItem('Help', () => Get.toNamed(Routes.HELP)),
+              ],
+            ),
           ),
         ),
       );

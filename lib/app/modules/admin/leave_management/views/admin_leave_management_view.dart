@@ -14,7 +14,9 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
 
   @override
   Widget build(BuildContext context) {
+    final ScrollController scrollController = controller.scrollController;
     return Scaffold(
+      backgroundColor: AppColors.backgroundGray,
       appBar: AppBar(
         title: const Text('Leave Management'),
         backgroundColor: Colors.white,
@@ -22,80 +24,136 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
         elevation: 0.5,
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Welcome back, Admin!', // Or dynamic admin name
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textBlack,
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (!controller.isLoadMoreLoading.value &&
+              controller.hasMoreApplications.value &&
+              scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+            controller.fetchAdminLeaveApplications();
+          }
+          return false;
+        },
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await controller.fetchAdminLeaveApplications(isRefresh: true);
+          },
+          child: CustomScrollView(
+            controller: scrollController,
+            slivers: [
+              // HEADER: Welcome + Filters
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Welcome back, Admin!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.textBlack,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            color: AppColors.primaryBlue,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Leave Management',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.textBlack,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSummarySection(controller),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            color: AppColors.primaryBlue,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Leave Requests',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.textBlack,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildFilterSection(controller),
+                      const SizedBox(height: 16),
+                      _buildSearchAndFilterRow(controller),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                _buildSummarySection(controller),
-                const SizedBox(height: 24),
-                const Text(
-                  'Leave Requests',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textBlack,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildFilterSection(controller),
-                const SizedBox(height: 16),
-                _buildSearchAndFilterRow(controller),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoadingApplications.value && controller.leaveApplications.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (controller.errorMessage.isNotEmpty) {
-                return Center(child: Text(controller.errorMessage.value));
-              } else if (controller.leaveApplications.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No leave applications found.',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+
+              // CONTENT: Leave Applications
+              Obx(() {
+                if (controller.isLoadingApplications.value &&
+                    controller.leaveApplications.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (controller.errorMessage.isNotEmpty) {
+                  return SliverFillRemaining(
+                    child: Center(child: Text(controller.errorMessage.value)),
+                  );
+                } else if (controller.leaveApplications.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: Text(
+                        'No leave applications found.',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index == controller.leaveApplications.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      final leave = controller.leaveApplications[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: AdminLeaveRequestCard(
+                          leave: leave,
+                          controller: controller,
+                        ),
+                      );
+                    },
+                    childCount:
+                        controller.leaveApplications.length +
+                        (controller.hasMoreApplications.value ? 1 : 0),
                   ),
                 );
-              }
-              return RefreshIndicator(
-                onRefresh: () => controller.fetchAdminLeaveApplications(isRefresh: true),
-                child: ListView.builder(
-                  controller: ScrollController()..addListener(() {
-                    if (controller.hasMoreApplications.value &&
-                        !controller.isLoadMoreLoading.value &&
-                        ScrollController().position.pixels == ScrollController().position.maxScrollExtent) {
-                      controller.fetchAdminLeaveApplications();
-                    }
-                  }),
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  itemCount: controller.leaveApplications.length + (controller.hasMoreApplications.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == controller.leaveApplications.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final leave = controller.leaveApplications[index];
-                    return AdminLeaveRequestCard(leave: leave, controller: controller);
-                  },
-                ),
-              );
-            }),
+              }),
+
+              // BOTTOM SPACER
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -106,22 +164,46 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
       if (controller.isLoadingSummary.value) {
         return const Center(child: CircularProgressIndicator());
       }
-      return Row(
+      return Column(
         children: [
-          AdminLeaveSummaryCard(
-            title: 'Total Requests',
-            value: (summary?.totalRequests ?? 0).toString(),
-            subtitle: 'This Month',
-            backgroundColor: AppColors.primaryBlue,
-            textColor: Colors.white,
+          Row(
+            children: [
+              AdminLeaveSummaryCard(
+                title: 'Total Requests',
+                value: (summary?.totalRequests ?? 0).toString(),
+                subtitle: 'This Month',
+                backgroundColor: AppColors.white,
+                textColor: AppColors.textBlack,
+              ),
+              const SizedBox(width: 12),
+              AdminLeaveSummaryCard(
+                title: 'Pending',
+                value: (summary?.pending ?? 0).toString(),
+                subtitle: 'Approval Now',
+                backgroundColor: AppColors.white,
+                textColor: AppColors.textBlack,
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          AdminLeaveSummaryCard(
-            title: 'Pending',
-            value: (summary?.pending ?? 0).toString(),
-            subtitle: 'Approval Now',
-            backgroundColor: AppColors.warningYellow,
-            textColor: AppColors.textBlack,
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              AdminLeaveSummaryCard(
+                title: 'Approved',
+                value: (summary?.approved ?? 0).toString(),
+                subtitle: 'This Month',
+                backgroundColor: AppColors.white,
+                textColor: AppColors.textBlack,
+              ),
+              const SizedBox(width: 12),
+              AdminLeaveSummaryCard(
+                title: 'Rejected',
+                value: (summary?.rejected ?? 0).toString(),
+                subtitle: 'Approval Now',
+                backgroundColor: AppColors.white,
+                textColor: AppColors.textBlack,
+              ),
+            ],
           ),
         ],
       );
@@ -138,17 +220,42 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
         ),
         child: Row(
           children: [
-            _buildFilterButton('All', 'all', controller.selectedStatusFilter.value, controller.setStatusFilter),
-            _buildFilterButton('Pending', 'pending', controller.selectedStatusFilter.value, controller.setStatusFilter),
-            _buildFilterButton('Approved', 'approved', controller.selectedStatusFilter.value, controller.setStatusFilter),
-            _buildFilterButton('Rejected', 'rejected', controller.selectedStatusFilter.value, controller.setStatusFilter),
+            _buildFilterButton(
+              'All',
+              'all',
+              controller.selectedStatusFilter.value,
+              controller.setStatusFilter,
+            ),
+            _buildFilterButton(
+              'Pending',
+              'pending',
+              controller.selectedStatusFilter.value,
+              controller.setStatusFilter,
+            ),
+            _buildFilterButton(
+              'Approved',
+              'approved',
+              controller.selectedStatusFilter.value,
+              controller.setStatusFilter,
+            ),
+            _buildFilterButton(
+              'Rejected',
+              'rejected',
+              controller.selectedStatusFilter.value,
+              controller.setStatusFilter,
+            ),
           ],
         ),
       );
     });
   }
 
-  Widget _buildFilterButton(String label, String value, String currentValue, Function(String) onTap) {
+  Widget _buildFilterButton(
+    String label,
+    String value,
+    String currentValue,
+    Function(String) onTap,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(value),
@@ -163,8 +270,12 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: currentValue == value ? AppColors.primaryBlue : Colors.grey[700],
-                fontWeight: currentValue == value ? FontWeight.bold : FontWeight.normal,
+                color: currentValue == value
+                    ? AppColors.primaryBlue
+                    : Colors.grey[700],
+                fontWeight: currentValue == value
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
           ),
@@ -188,7 +299,10 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
               ),
               filled: true,
               fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 10,
+              ),
             ),
             style: const TextStyle(fontSize: 14),
           ),
@@ -224,31 +338,38 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
     );
   }
 
-  void _showAdvancedFilterDialog(BuildContext context, AdminLeaveController controller) {
+  void _showAdvancedFilterDialog(
+    BuildContext context,
+    AdminLeaveController controller,
+  ) {
     Get.dialog(
       AlertDialog(
         title: const Text('Advanced Filters'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedLeaveTypeFilter.value,
-                  decoration: const InputDecoration(
-                    labelText: 'Leave Type',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: ['all', 'sick', 'casual']
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text(type.capitalizeFirst!),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.setLeaveTypeFilter(value);
-                    }
-                  },
-                )),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedLeaveTypeFilter.value,
+                decoration: const InputDecoration(
+                  labelText: 'Leave Type',
+                  border: OutlineInputBorder(),
+                ),
+                items: ['all', 'sick', 'casual']
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type.capitalizeFirst!),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.setLeaveTypeFilter(value);
+                  }
+                },
+              ),
+            ),
             const SizedBox(height: 16),
             // You can add more filters here, e.g., for specific users/departments
           ],

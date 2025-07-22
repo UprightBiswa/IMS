@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../../../theme/app_colors.dart';
-import '../../../../../../admin/attendance_management/views/admin_attendance_page.dart';
-import '../../../../controllers/faculty_my_attendance_controller.dart';
-import '../../../../widgets/monthly_attendance_card.dart';
-import 'faculty_my_attendance_overview_view.dart';
-import '../faculty_my_attendance_leave_view.dart';
+import '../../../../../../theme/app_colors.dart';
+import '../../../../../admin/attendance_management/views/admin_attendance_page.dart';
+import '../../../controllers/faculty_my_attendance_controller.dart';
+import 'tab/faculty_my_attendance_checkin_view.dart';
+import 'tab/faculty_my_attendance_log_view.dart';
+import 'tab/monthly_attendance_card.dart';
+import 'tab/faculty_my_attendance_overview_view.dart';
+import 'tab/faculty_my_attendance_leave_view.dart';
 
 class FacultyMyAttendanceTab extends StatelessWidget {
   FacultyMyAttendanceTab({super.key});
@@ -67,11 +69,20 @@ class FacultyMyAttendanceTab extends StatelessWidget {
                         isSelected: controller.selectedSubTab.value == 0,
                         onTap: () => controller.changeSubTab(0),
                       ),
-
                       TopTabButton(
-                        label: 'Leave',
+                        label: 'Check In',
                         isSelected: controller.selectedSubTab.value == 1,
                         onTap: () => controller.changeSubTab(1),
+                      ),
+                      TopTabButton(
+                        label: 'Log',
+                        isSelected: controller.selectedSubTab.value == 2,
+                        onTap: () => controller.changeSubTab(2),
+                      ),
+                      TopTabButton(
+                        label: 'Leave',
+                        isSelected: controller.selectedSubTab.value == 3,
+                        onTap: () => controller.changeSubTab(3),
                       ),
                     ],
                   ),
@@ -83,7 +94,11 @@ class FacultyMyAttendanceTab extends StatelessWidget {
                   case 0:
                     return const MonthlyAttendanceCard();
                   case 1:
-                    return FacultyMyAttendanceLeaveView();
+                    return const FacultyMyAttendanceCheckInView(); // NEW
+                  case 2:
+                    return const FacultyMyAttendanceLogView(); // NEW
+                  case 3:
+                    return const FacultyMyAttendanceLeaveView();
                   default:
                     return Container();
                 }

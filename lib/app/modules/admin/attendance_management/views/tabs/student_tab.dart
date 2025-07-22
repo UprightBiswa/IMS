@@ -58,31 +58,33 @@ class StudentTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+
               Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const TextField(
-                        style: TextStyle(fontSize: 10),
-                        decoration: InputDecoration(
-                          hintText: 'Search Students...',
-                          hintStyle: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey,
-                          ),
-                          prefixIcon: Icon(Icons.search, size: 16),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search...',
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 10,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 0,
+                          horizontal: 10,
                         ),
                       ),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -90,7 +92,7 @@ class StudentTab extends StatelessWidget {
                     onTap: () {
                       // Handle filter action
                       // ADMIN_LEAVE_MANAGEMENT
-                      Get.to(() => Routes.ADMIN_LEAVE_MANAGEMENT);
+                      Get.toNamed(Routes.ADMIN_LEAVE_MANAGEMENT);
                     },
                     child: Container(
                       height: 20,

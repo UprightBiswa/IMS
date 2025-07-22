@@ -16,8 +16,11 @@ class AdminLeaveController extends GetxController {
   final ApiService _apiService = ApiService();
   final Logger _logger = Logger();
 
-  final Rx<AdminLeaveSummaryModel?> leaveSummary = Rx<AdminLeaveSummaryModel?>(null);
-  final RxList<AdminLeaveApplicationModel> leaveApplications = <AdminLeaveApplicationModel>[].obs;
+  final Rx<AdminLeaveSummaryModel?> leaveSummary = Rx<AdminLeaveSummaryModel?>(
+    null,
+  );
+  final RxList<AdminLeaveApplicationModel> leaveApplications =
+      <AdminLeaveApplicationModel>[].obs;
   final RxBool isLoadingSummary = false.obs;
   final RxBool isLoadingApplications = false.obs;
   final RxBool isLoadMoreLoading = false.obs;
@@ -26,14 +29,17 @@ class AdminLeaveController extends GetxController {
 
   int _currentPage = 1;
   final int _perPage = 10;
-  final RxString selectedStatusFilter = 'all'.obs; // 'all', 'pending', 'approved', 'rejected'
+  final RxString selectedStatusFilter =
+      'all'.obs; // 'all', 'pending', 'approved', 'rejected'
   final RxString selectedLeaveTypeFilter = 'all'.obs; // 'all', 'sick', 'casual'
   final Rx<DateTimeRange?> selectedDateRangeFilter = Rx<DateTimeRange?>(null);
   final TextEditingController searchController = TextEditingController();
+  late ScrollController scrollController;
 
   @override
   void onInit() {
     super.onInit();
+    scrollController = ScrollController();
     fetchAdminLeaveSummary();
     fetchAdminLeaveApplications(isRefresh: true);
     searchController.addListener(_onSearchChanged);
@@ -43,6 +49,7 @@ class AdminLeaveController extends GetxController {
   void onClose() {
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
@@ -61,7 +68,9 @@ class AdminLeaveController extends GetxController {
       // TODO: Replace with actual API call if available, otherwise use dummy
       // final response = await _apiService.get(ApiEndpoints.ADMIN_LEAVE_SUMMARY);
       // leaveSummary.value = AdminLeaveSummaryModel.fromJson(response.data);
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Simulate network delay
       leaveSummary.value = AdminLeaveSummaryModel.dummy();
     } catch (e) {
       errorMessage.value = 'Failed to load leave summary: ${e.toString()}';
@@ -82,7 +91,8 @@ class AdminLeaveController extends GetxController {
       return; // No more data to load
     }
 
-    isLoadMoreLoading.value = !isRefresh; // Only set load more loading if not a refresh
+    isLoadMoreLoading.value =
+        !isRefresh; // Only set load more loading if not a refresh
 
     try {
       final Map<String, dynamic> queryParams = {
@@ -98,8 +108,12 @@ class AdminLeaveController extends GetxController {
       }
       // Add date range filter if implemented in API
       if (selectedDateRangeFilter.value != null) {
-        queryParams['start_date'] = DateFormat('yyyy-MM-dd').format(selectedDateRangeFilter.value!.start);
-        queryParams['end_date'] = DateFormat('yyyy-MM-dd').format(selectedDateRangeFilter.value!.end);
+        queryParams['start_date'] = DateFormat(
+          'yyyy-MM-dd',
+        ).format(selectedDateRangeFilter.value!.start);
+        queryParams['end_date'] = DateFormat(
+          'yyyy-MM-dd',
+        ).format(selectedDateRangeFilter.value!.end);
       }
       // Add search query if implemented in API
       if (searchController.text.isNotEmpty) {
@@ -107,13 +121,16 @@ class AdminLeaveController extends GetxController {
       }
 
       final response = await _apiService.get(
-        ApiEndpoints.ADMIN_ALL_LEAVE_APPLICATIONS, // New endpoint for admin all leaves
+        ApiEndpoints
+            .ADMIN_ALL_LEAVE_APPLICATIONS, // New endpoint for admin all leaves
         queryParameters: queryParams,
       );
 
       final List<dynamic> applicationsJson = response.data['applications'];
       final List<AdminLeaveApplicationModel> fetchedApplications =
-          applicationsJson.map((json) => AdminLeaveApplicationModel.fromJson(json)).toList();
+          applicationsJson
+              .map((json) => AdminLeaveApplicationModel.fromJson(json))
+              .toList();
 
       leaveApplications.addAll(fetchedApplications);
       if (fetchedApplications.length < _perPage) {
@@ -122,8 +139,10 @@ class AdminLeaveController extends GetxController {
       _currentPage++;
     } on DioException catch (e) {
       String msg = 'Failed to load leave applications.';
-      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
-        msg = 'Connection timed out. Please check your internet connection or try again later.';
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        msg =
+            'Connection timed out. Please check your internet connection or try again later.';
       } else if (e.response != null) {
         final errorData = e.response!.data;
         if (errorData is Map<String, dynamic>) {
@@ -137,18 +156,19 @@ class AdminLeaveController extends GetxController {
             }
           }
         } else {
-          msg = 'Server responded with status ${e.response?.statusCode} but no readable error message.';
+          msg =
+              'Server responded with status ${e.response?.statusCode} but no readable error message.';
         }
       } else {
         msg = e.message ?? 'Network error (No response from server).';
       }
       errorMessage.value = msg;
       _logger.e(errorMessage.value);
-     Get.snackbar(
+      Get.snackbar(
         'Error',
         msg,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha:0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
@@ -159,7 +179,7 @@ class AdminLeaveController extends GetxController {
         'Error',
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha:0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } finally {
@@ -188,7 +208,11 @@ class AdminLeaveController extends GetxController {
   }
 
   // Action for admin to approve/reject a leave application
-  Future<void> reviewLeaveApplication(int applicationId, String action, {String? comments}) async {
+  Future<void> reviewLeaveApplication(
+    int applicationId,
+    String action, {
+    String? comments,
+  }) async {
     isLoadingApplications.value = true;
     errorMessage.value = '';
     try {
@@ -205,7 +229,7 @@ class AdminLeaveController extends GetxController {
           'Success',
           'Leave application ${action}d successfully!',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha:0.8),
+          backgroundColor: Colors.green.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
         // Refresh all data after review
@@ -216,7 +240,7 @@ class AdminLeaveController extends GetxController {
           'Info',
           'Review processed with status: ${response.statusCode}',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.blue.withValues(alpha:0.8),
+          backgroundColor: Colors.blue.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       }
@@ -237,7 +261,7 @@ class AdminLeaveController extends GetxController {
         'Error',
         msg,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha:0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } catch (e) {
@@ -246,7 +270,7 @@ class AdminLeaveController extends GetxController {
         'Error',
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha:0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } finally {

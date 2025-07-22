@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../../theme/app_colors.dart';
-import '../../../controllers/faculty_my_attendance_controller.dart';
-import '../../../widgets/leave_management_card.dart';
-import '../../../widgets/recent_leave_applications_card.dart';
+import '../../../../../../../theme/app_colors.dart';
+import '../../../../controllers/faculty_my_attendance_controller.dart';
+import '../../../../widgets/leave_management_card.dart';
+import '../../../../widgets/recent_leave_applications_card.dart';
 
 class FacultyMyAttendanceLeaveView extends StatelessWidget {
   const FacultyMyAttendanceLeaveView({super.key});

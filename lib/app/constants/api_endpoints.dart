@@ -39,4 +39,9 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/faculty/student_attendance_dashboard_mapp';
   static const String FACULTY_STUDENTWISE_ATTENDANCE_MAPP =
       '/api/v1/attendance/dashboard/faculty/student_studentwise_attendance_mapp';
+  
+  // NEW Faculty Check-in/Log Endpoints (PLACEHOLDERS)
+  static const String FACULTY_CHECK_IN = '/api/v1/attendance/faculty/check_in';
+  static const String FACULTY_CHECK_OUT = '/api/v1/attendance/faculty/check_out';
+  static const String FACULTY_ATTENDANCE_LOGS = '/api/v1/attendance/faculty/logs';
 }

@@ -83,7 +83,7 @@
 //         ),
 //         const SizedBox(height: 16),
 //         Obx(() {
-          
+
 //           return Container(
 //             padding: const EdgeInsets.all(10),
 //             decoration: BoxDecoration(
@@ -188,7 +188,6 @@
 //   }
 // }
 
-
 // lib/app/modules/faculty_student_attendance/views/student_wise_attendance_list.dart
 
 import 'package:flutter/material.dart';
@@ -257,34 +256,34 @@ class StudentWiseAttendanceList extends StatelessWidget {
             const SizedBox(width: 16),
             // Filter button with dropdown menu
             // Obx(() {
-            //   return 
-              GestureDetector(
-                onTap: () {
-                  // Show filter options (e.g., using a custom dialog or bottom sheet)
-                  _showFilterDialog(context, controller);
-                },
-                child: Container(
-                  height: 30,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300, width: .5),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.filter_alt_outlined,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 4),
-                      Text('Filter', style: TextStyle(fontSize: 10)),
-                    ],
-                  ),
+            //   return
+            GestureDetector(
+              onTap: () {
+                // Show filter options (e.g., using a custom dialog or bottom sheet)
+                _showFilterDialog(context, controller);
+              },
+              child: Container(
+                height: 30,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300, width: .5),
                 ),
-              )
-              // );
+                child: Row(
+                  children: const [
+                    Icon(
+                      Icons.filter_alt_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(width: 4),
+                    Text('Filter', style: TextStyle(fontSize: 10)),
+                  ],
+                ),
+              ),
+            ),
+            // );
             // }),
           ],
         ),
@@ -293,7 +292,9 @@ class StudentWiseAttendanceList extends StatelessWidget {
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           } else if (controller.isError.value) {
-            return Center(child: Text('Error: ${controller.errorMessage.value}'));
+            return Center(
+              child: Text('Error: ${controller.errorMessage.value}'),
+            );
           } else if (controller.studentList.isEmpty) {
             return const Center(child: Text('No students found.'));
           } else {
@@ -315,10 +316,11 @@ class StudentWiseAttendanceList extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
                           radius: 15,
-                          backgroundColor: Colors.blue.shade100,
+                          backgroundColor: Colors.blue.shade50,
                           child: Text(
                             student.name.substring(0, 1).toUpperCase(),
                             style: const TextStyle(
@@ -328,36 +330,32 @@ class StudentWiseAttendanceList extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                student.name,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.darkText,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                student.rollNumber,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
+
+                        Text(
+                          student.name,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.darkText,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          student.rollNumber,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.all(4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                          
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: _getStatusColor(
                               student.status,
-                            ).withOpacity(.1),
+                            ).withValues(alpha:.1),
                           ),
                           child: Text(
                             student.status,
@@ -368,6 +366,7 @@ class StudentWiseAttendanceList extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
+
                         // icon for ...
                         Container(
                           padding: const EdgeInsets.all(4),
@@ -392,7 +391,7 @@ class StudentWiseAttendanceList extends StatelessWidget {
                             child: const Icon(
                               Icons.more_vert,
                               size: 16,
-                              color: AppColors.darkText,
+                              color: AppColors.greyText,
                             ),
                           ),
                         ),
@@ -409,8 +408,11 @@ class StudentWiseAttendanceList extends StatelessWidget {
   }
 
   void _showFilterDialog(
-      BuildContext context, FacultyStudentAttendanceController controller) {
+    BuildContext context,
+    FacultyStudentAttendanceController controller,
+  ) {
     Get.bottomSheet(
+      isScrollControlled: true,
       Container(
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
@@ -434,29 +436,44 @@ class StudentWiseAttendanceList extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Department', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Department',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
-                Obx(() => DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      value: controller.selectedDepartmentFilter.value ?? controller.departmentFilters.firstOrNull,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                Obx(
+                  () => DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value:
+                        controller.selectedDepartmentFilter.value ??
+                        controller.departmentFilters.firstOrNull,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
                       ),
-                      hint: const Text('Select Department'),
-                      onChanged: controller.selectDepartmentFilter,
-                      items: controller.departmentFilters
-                          .map((department) => DropdownMenuItem(
-                                value: department,
-                                child: Text(department, style: const TextStyle(fontSize: 14)),
-                              ))
-                          .toList(),
-                    )),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    hint: const Text('Select Department'),
+                    onChanged: controller.selectDepartmentFilter,
+                    items: controller.departmentFilters
+                        .map(
+                          (department) => DropdownMenuItem(
+                            value: department,
+                            child: Text(
+                              department,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -464,29 +481,44 @@ class StudentWiseAttendanceList extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Course', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Course',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
-                Obx(() => DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      value: controller.selectedCourseFilter.value ?? controller.courseFilters.firstOrNull,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                Obx(
+                  () => DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value:
+                        controller.selectedCourseFilter.value ??
+                        controller.courseFilters.firstOrNull,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
                       ),
-                      hint: const Text('Select Course'),
-                      onChanged: controller.selectCourseFilter,
-                      items: controller.courseFilters
-                          .map((course) => DropdownMenuItem(
-                                value: course,
-                                child: Text(course, style: const TextStyle(fontSize: 14)),
-                              ))
-                          .toList(),
-                    )),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    hint: const Text('Select Course'),
+                    onChanged: controller.selectCourseFilter,
+                    items: controller.courseFilters
+                        .map(
+                          (course) => DropdownMenuItem(
+                            value: course,
+                            child: Text(
+                              course,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -494,29 +526,44 @@ class StudentWiseAttendanceList extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Semester', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Semester',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
-                Obx(() => DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      value: controller.selectedSemesterFilter.value ?? controller.semesterFilters.firstOrNull,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                Obx(
+                  () => DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value:
+                        controller.selectedSemesterFilter.value ??
+                        controller.semesterFilters.firstOrNull,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
                       ),
-                      hint: const Text('Select Semester'),
-                      onChanged: controller.selectSemesterFilter,
-                      items: controller.semesterFilters
-                          .map((semester) => DropdownMenuItem(
-                                value: semester,
-                                child: Text(semester, style: const TextStyle(fontSize: 14)),
-                              ))
-                          .toList(),
-                    )),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    hint: const Text('Select Semester'),
+                    onChanged: controller.selectSemesterFilter,
+                    items: controller.semesterFilters
+                        .map(
+                          (semester) => DropdownMenuItem(
+                            value: semester,
+                            child: Text(
+                              semester,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -524,29 +571,42 @@ class StudentWiseAttendanceList extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Attendance Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Attendance Status',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
-                Obx(() => DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      value: controller.selectedAttendanceStatusFilter.value,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[100],
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                Obx(
+                  () => DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: controller.selectedAttendanceStatusFilter.value,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
                       ),
-                      hint: const Text('Select Status'),
-                      onChanged: controller.selectAttendanceStatusFilter,
-                      items: controller.attendanceStatusFilters
-                          .map((status) => DropdownMenuItem(
-                                value: status,
-                                child: Text(status, style: const TextStyle(fontSize: 14)),
-                              ))
-                          .toList(),
-                    )),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    hint: const Text('Select Status'),
+                    onChanged: controller.selectAttendanceStatusFilter,
+                    items: controller.attendanceStatusFilters
+                        .map(
+                          (status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(
+                              status,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -558,7 +618,10 @@ class StudentWiseAttendanceList extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -573,5 +636,6 @@ class StudentWiseAttendanceList extends StatelessWidget {
         ),
       ),
     );
+    
   }
 }

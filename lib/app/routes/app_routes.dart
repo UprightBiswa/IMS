@@ -32,8 +32,8 @@ abstract class Routes {
   static const ADMIN_LEAVE_MANAGEMENT =
       _Paths.ADMIN_LEAVE_MANAGEMENT; // NEW ROUTE
 
-  // FACULTY_ATTENDANCE
-  static const FACULTY_ATTENDANCE = '/faculty-attendance';
+  // Faculty Routes
+  static const FACULTY_ATTENDANCE = _Paths.FACULTY_ATTENDANCE;
 }
 
 abstract class _Paths {
@@ -68,4 +68,8 @@ abstract class _Paths {
   //admin
   static const ADMIN_ATTENDANCE = '/admin-attendance';
   static const ADMIN_LEAVE_MANAGEMENT = '/admin-leave-management'; // NEW ROUTE
+
+  //faculty
+  static const FACULTY_ATTENDANCE = '/faculty-attendance';
+
 }

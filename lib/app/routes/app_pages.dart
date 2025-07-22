@@ -6,6 +6,7 @@ import '../constants/app_constrants.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
 import '../modules/admin/leave_management/bindings/admin_leave_binding.dart';
 import '../modules/admin/leave_management/views/admin_leave_management_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/student/assingment/bindings/assignment_binding.dart';
 import '../modules/student/assingment/view/assignment_create_new_tab.dart';
 import '../modules/student/assingment/view/assingment_view.dart';
@@ -25,7 +26,6 @@ import '../modules/student/home/bindings/home_binding.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/profile/views/profile_view.dart';
-import '../modules/profile/controllers/profile_controller.dart';
 import '../modules/student/setting/bindings/settings_binding.dart';
 import '../modules/student/setting/view/settings_view.dart';
 import '../modules/student/syllabus/bindings/syllabus_binding.dart';
@@ -95,7 +95,7 @@ class AppPages {
     GetPage(
       name: Routes.PROFILE,
       page: () => ProfileView(),
-      binding: BindingsBuilder(() => Get.lazyPut(() => ProfileController())),
+      binding: ProfileBinding(),
       middlewares: [RouteProtectionMiddleware()],
     ),
 

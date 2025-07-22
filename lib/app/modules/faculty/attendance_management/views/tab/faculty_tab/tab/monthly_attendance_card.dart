@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../theme/app_colors.dart';
-import '../controllers/faculty_my_attendance_controller.dart';
+import '../../../../../../../theme/app_colors.dart';
+import '../../../../controllers/faculty_my_attendance_controller.dart';
 
 class MonthlyAttendanceCard extends StatelessWidget {
   const MonthlyAttendanceCard({super.key});

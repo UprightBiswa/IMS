@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart'; 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,25 +13,29 @@ import 'package:flutter/services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //error for web
-  if (Platform.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    );
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-    SystemChrome.setSystemUIOverlayStyle(defaultOverlay);
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  }
-
-  if (Platform.isAndroid) {
-    final androidVersion = int.parse(
-      Platform.version.split(' ').first.split('.').first,
-    );
-    if (androidVersion >= 15) {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: [SystemUiOverlay.top],
+  if (!kIsWeb) {
+    if (Platform.isAndroid) {
+      SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
       );
+      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+      SystemChrome.setSystemUIOverlayStyle(defaultOverlay);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    }
+
+    if (Platform.isAndroid) {
+      final androidVersion = int.parse(
+        Platform.version.split(' ').first.split('.').first,
+      );
+      if (androidVersion >= 15) {
+        SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.manual,
+          overlays: [SystemUiOverlay.top],
+        );
+      }
     }
   }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -48,10 +52,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (Platform.isAndroid || Platform.isIOS) {
+        if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
           FocusScope.of(context).unfocus();
         }
       },
+
       child: GetMaterialApp(
         title: "Attendance Management System",
         defaultTransition: Transition.cupertino,

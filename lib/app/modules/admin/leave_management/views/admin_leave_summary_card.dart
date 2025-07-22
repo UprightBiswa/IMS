@@ -37,13 +37,11 @@ class AdminLeaveSummaryCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 12,
                 color: textColor.withOpacity(0.8),
               ),
             ),
@@ -51,8 +49,7 @@ class AdminLeaveSummaryCard extends StatelessWidget {
             Text(
               value,
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
                 color: textColor,
               ),
             ),
