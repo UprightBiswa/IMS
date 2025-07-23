@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../../../../theme/app_colors.dart';
 import '../../../../controllers/faculty_student_attendance_controller.dart';
+import '../../../../models/session_for_marking_model.dart';
 import '../../../../models/student_attendance_model.dart';
+import '../../../../widgets/student_dashboard_upload_image.dart';
 
 class FacultyStudentAttendanceMarkView extends StatelessWidget {
   FacultyStudentAttendanceMarkView({super.key});
@@ -99,55 +101,115 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                         ),
                       ),
 
-                      Text(
-                        DateFormat(
-                          'EEE, MMM dd, yyyy',
-                        ).format(controller.markAttendanceDate.value),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.darkBlue,
+                      Obx(
+                        () => Text(
+                          DateFormat(
+                            'EEE, MMM dd, yyyy',
+                          ).format(controller.markAttendanceDate.value),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.darkBlue,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
+                // Single Session Dropdown
+                Obx(() => _buildSessionDropdown(
+                      label: 'Select Session',
+                      value: controller.selectedSession.value,
+                      items: controller.todaySessions,
+                      onChanged: controller.selectSessionForMarking,
+                      hintText: 'Choose a class session',
+                    )),
+                const SizedBox(height: 16),
 
                 // Filters: Course, Section, Subject, Sub-Subject
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDropdownTile(
-                        label: 'Course',
-                        value: controller.selectedCourse.value,
-                        items: controller.courses,
-                        onChanged: controller.selectCourse,
+                Obx(
+                  () => Row(
+                    children: [
+                      Expanded(
+                        child: _buildDropdownTile(
+                          label: 'Course',
+                          value: controller.selectedCourse.value,
+                          items: controller.courses,
+                          onChanged: controller.selectCourse,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _buildDropdownTile(
-                        label: 'Section',
-                        value: controller.selectedSection.value,
-                        items: controller.sections,
-                        onChanged: controller.selectSection,
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildDropdownTile(
+                          label: 'Section',
+                          value: controller.selectedSection.value,
+                          items: controller.sections,
+                          onChanged: controller.selectSection,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
 
-                _buildDropdownTile(
+            Obx(() =>    _buildDropdownTile(
                   label: 'Subject',
                   value: controller.selectedSubject.value,
                   items: controller.subjects,
                   onChanged: controller.selectSubject,
-                ),
-                _buildDropdownTile(
+                ),),
+               Obx(() => _buildDropdownTile(
                   label: 'Sub-Subject',
                   value: controller.selectedSubSubject.value,
                   items: controller.subSubjects,
                   onChanged: controller.selectSubSubject,
                   hintText: 'Select Sub-Subject (Optional)',
+                ),),
+                const SizedBox(height: 16),
+
+                 // Display selected session details
+                Obx(() {
+                  final session = controller.selectedSession.value;
+                  if (session != null) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Selected Session Details:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[700])),
+                          Text('Course: ${session.displayCourse}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text('Section: ${session.displaySection}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text('Subject: ${session.displaySubject}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text('Time: ${session.displayTime}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text('Session ID: ${session.sessionId}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text('Marking Status: ${session.markingStatus.replaceAll('_', ' ').capitalizeFirst}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                  onPressed: controller.selectedSession.value == null
+                        ? null // Disable if no session is selected
+                        : () {
+                            Get.to(() => StudentDashboardUploadImage());
+                          },
+                    icon: const Icon(Icons.edit_note, color: Colors.white),
+                    label: const Text(
+                      'Mark Attendance',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -474,6 +536,60 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
       ),
     );
   }
+
+   // Updated dropdown for SessionForMarkingModel
+  Widget _buildSessionDropdown({
+    required String label,
+    required SessionForMarkingModel? value,
+    required List<SessionForMarkingModel> items,
+    required Function(SessionForMarkingModel?) onChanged,
+    String? hintText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: AppColors.darkText),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: AppColors.cardBackground,
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<SessionForMarkingModel>(
+                isExpanded: true,
+                value: value,
+                hint: Text(
+                  hintText ?? 'Select $label',
+                  style: TextStyle(color: AppColors.greyText, fontSize: 12),
+                ),
+                items: items.map((SessionForMarkingModel item) {
+                  return DropdownMenuItem<SessionForMarkingModel>(
+                    value: item,
+                    child: Text(
+                      item.displayString, // Use the new displayString
+                      style: TextStyle(
+                        color: AppColors.darkText,
+                        fontSize: 12,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: onChanged,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildDropdownTile({
     required String label,

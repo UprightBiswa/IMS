@@ -1,11 +1,18 @@
 // lib/app/modules/faculty_student_attendance/controllers/faculty_student_attendance_controller.dart
-
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
+
+import 'package:logger/logger.dart';
 import '../../../../constants/api_endpoints.dart';
 import '../../../../services/api_service.dart';
+import '../../../../theme/app_colors.dart';
+import '../models/session_for_marking_model.dart';
 import '../models/student_attendance_model.dart'; // Import student attendance models
 
 class FacultyStudentAttendanceController extends GetxController {
+  final ApiService _apiService = ApiService();
+  final Logger _logger = Logger();
   final RxInt selectedStudentSubTab = 0.obs; // 0: Dashboard, 1: Record, 2: Mark
   // overview, classes, students
   final RxInt selectedDashboardTab = 0.obs;
@@ -18,23 +25,38 @@ class FacultyStudentAttendanceController extends GetxController {
   // --- Dashboard Data ---
   final Rx<OverallStudentAttendanceSummary?> overallSummary =
       Rx<OverallStudentAttendanceSummary?>(null);
-
   final RxList<ClassAttendanceSnapshot> classSnapshots =
       <ClassAttendanceSnapshot>[].obs;
-
   final RxList<RecentClass> recentClasses = <RecentClass>[].obs;
+
+  // Mark Attendance Tab Data
+  final RxList<SessionForMarkingModel> todaySessions =
+      <SessionForMarkingModel>[].obs;
+  final Rx<SessionForMarkingModel?> selectedSession =
+      Rx<SessionForMarkingModel?>(null);
 
   final RxList<StudentBasicInfo> studentList = <StudentBasicInfo>[].obs;
 
   // Filter properties for student-wise attendance
-  final RxList<String> departmentFilters = <String>[].obs; // To store available department names
+  final RxList<String> departmentFilters =
+      <String>[].obs; // To store available department names
   final RxnString selectedDepartmentFilter = RxnString(); // Selected department
-  final RxList<String> courseFilters = <String>[].obs; // To store available course names
+  final RxList<String> courseFilters =
+      <String>[].obs; // To store available course names
   final RxnString selectedCourseFilter = RxnString(); // Selected course
-  final RxList<String> semesterFilters = <String>[].obs; // To store available semester names
+  final RxList<String> semesterFilters =
+      <String>[].obs; // To store available semester names
   final RxnString selectedSemesterFilter = RxnString(); // Selected semester
-  final RxList<String> attendanceStatusFilters = ['All', 'Present', 'Absent', 'Late', 'Excused', 'Low Attendance'].obs;
-  final RxString selectedAttendanceStatusFilter = 'All'.obs; // Selected attendance status
+  final RxList<String> attendanceStatusFilters = [
+    'All',
+    'Present',
+    'Absent',
+    'Late',
+    'Excused',
+    'Low Attendance',
+  ].obs;
+  final RxString selectedAttendanceStatusFilter =
+      'All'.obs; // Selected attendance status
 
   // For Mark UI (existing)
   final RxList<String> courses = ['B.Sc Physics', 'B.Com', 'B.Tech', 'BBA'].obs;
@@ -77,6 +99,7 @@ class FacultyStudentAttendanceController extends GetxController {
     super.onInit();
     // Initialize data for mark attendance tab
     fetchStudentAttendanceDashboard();
+    fetchTodaySessions();
     fetchStudentWiseAttendance(); // Fetch student-wise attendance on init
   }
 
@@ -117,7 +140,6 @@ class FacultyStudentAttendanceController extends GetxController {
     }
   }
 
-
   // --- API Calls ---
   Future<void> fetchStudentAttendanceDashboard() async {
     try {
@@ -131,8 +153,9 @@ class FacultyStudentAttendanceController extends GetxController {
 
       final data = response.data['data']['faculty_data'];
 
-      overallSummary.value =
-          OverallStudentAttendanceSummary.fromJson(data['overall_attendance']);
+      overallSummary.value = OverallStudentAttendanceSummary.fromJson(
+        data['overall_attendance'],
+      );
 
       classSnapshots.value = (data['class_wise_attendance'] as List)
           .map((e) => ClassAttendanceSnapshot.fromJson(e))
@@ -160,16 +183,20 @@ class FacultyStudentAttendanceController extends GetxController {
       if (departmentId != null) {
         queryParams['department_id'] = departmentId;
       }
-      if (selectedCourseFilter.value != null && selectedCourseFilter.value != 'All') {
+      if (selectedCourseFilter.value != null &&
+          selectedCourseFilter.value != 'All') {
         // You'll need a way to map course names to IDs if your API expects IDs
         queryParams['course_id'] = selectedCourseFilter.value; // Placeholder
       }
-      if (selectedSemesterFilter.value != null && selectedSemesterFilter.value != 'All') {
+      if (selectedSemesterFilter.value != null &&
+          selectedSemesterFilter.value != 'All') {
         // You'll need a way to map semester names to IDs if your API expects IDs
-        queryParams['semester_id'] = selectedSemesterFilter.value; // Placeholder
+        queryParams['semester_id'] =
+            selectedSemesterFilter.value; // Placeholder
       }
       if (selectedAttendanceStatusFilter.value != 'All') {
-        queryParams['attendance_filter'] = selectedAttendanceStatusFilter.value.toLowerCase();
+        queryParams['attendance_filter'] = selectedAttendanceStatusFilter.value
+            .toLowerCase();
       }
 
       final response = await ApiService().get(
@@ -182,25 +209,42 @@ class FacultyStudentAttendanceController extends GetxController {
       final Map<String, dynamic> filterInfo = studentData['filter_info'];
       final Map<String, dynamic> contextInfo = studentData['context_info'];
 
-
-      studentList.value =
-          studentsJson.map((e) => StudentBasicInfo.fromJson(e)).toList();
+      studentList.value = studentsJson
+          .map((e) => StudentBasicInfo.fromJson(e))
+          .toList();
 
       // Populate filter options from API response (if available in filter_info or metadata)
       // This is a simplified example. In a real app, you'd likely have separate API endpoints for filter options.
-      if (contextInfo['department'] != null && contextInfo['department']['department_name'] != null) {
-        departmentFilters.value = [contextInfo['department']['department_name']];
+      if (contextInfo['department'] != null &&
+          contextInfo['department']['department_name'] != null) {
+        departmentFilters.value = [
+          contextInfo['department']['department_name'],
+        ];
         // Set the selected department to the one returned by the API
-        selectedDepartmentFilter.value = contextInfo['department']['department_name'];
+        selectedDepartmentFilter.value =
+            contextInfo['department']['department_name'];
       } else {
-         departmentFilters.value = ['Computer Science', 'Physics', 'Mathematics', 'Chemistry']; // Dummy options
-         selectedDepartmentFilter.value = departmentFilters.first;
+        departmentFilters.value = [
+          'Computer Science',
+          'Physics',
+          'Mathematics',
+          'Chemistry',
+        ]; // Dummy options
+        selectedDepartmentFilter.value = departmentFilters.first;
       }
       // Assuming 'courses' and 'semesters' arrays might be in filter_info or another endpoint
-      courseFilters.value = ['All', 'Physics I', 'Mathematics I', 'Database Systems', 'Programming Fundamentals']; // Dummy options
-      semesterFilters.value = ['All', 'Semester 1', 'Semester 2']; // Dummy options
-
-
+      courseFilters.value = [
+        'All',
+        'Physics I',
+        'Mathematics I',
+        'Database Systems',
+        'Programming Fundamentals',
+      ]; // Dummy options
+      semesterFilters.value = [
+        'All',
+        'Semester 1',
+        'Semester 2',
+      ]; // Dummy options
     } catch (e) {
       isError.value = true;
       errorMessage.value = 'Error fetching students: ${e.toString()}';
@@ -209,6 +253,60 @@ class FacultyStudentAttendanceController extends GetxController {
     }
   }
 
+  // Fetch Today's Sessions for Mark Attendance
+  Future<void> fetchTodaySessions() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      final response = await _apiService.get(
+        ApiEndpoints.FACULTY_TODAY_SESSIONS,
+      );
+      final List<dynamic> sessionsJson = response.data['data']['sessions'];
+      todaySessions.value = sessionsJson
+          .map((json) => SessionForMarkingModel.fromJson(json))
+          .toList();
+      if (todaySessions.isNotEmpty) {
+        courses.value = todaySessions
+            .map((s) => s.courseTitle)
+            .toSet()
+            .toList();
+        selectedCourse.value = courses.first;
+
+        sections.value = todaySessions
+            .where((s) => s.courseTitle == selectedCourse.value)
+            .map((s) => s.location)
+            .toSet()
+            .toList();
+        if (sections.isNotEmpty) selectedSection.value = sections.first;
+
+        subjects.value = todaySessions
+            .where(
+              (s) =>
+                  s.courseTitle == selectedCourse.value &&
+                  s.location == selectedSection.value,
+            )
+            .map((s) => s.topic)
+            .toSet()
+            .toList();
+        if (subjects.isNotEmpty) selectedSubject.value = subjects.first;
+
+        subSubjects.clear();
+
+        selectedSession.value = todaySessions.firstWhereOrNull(
+          (s) =>
+              s.courseTitle == selectedCourse.value &&
+              s.location == selectedSection.value &&
+              s.topic == selectedSubject.value,
+        );
+      }
+    } catch (e) {
+      errorMessage.value =
+          'An unexpected error occurred fetching sessions: ${e.toString()}';
+      _logger.e('Error fetching today sessions: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // --- Mark Attendance Methods (existing) ---
   void selectCourse(String? course) {
@@ -244,6 +342,11 @@ class FacultyStudentAttendanceController extends GetxController {
 
   void selectMarkAttendanceDate(DateTime date) {
     markAttendanceDate.value = date;
+    filterStudentsForMarking();
+  }
+
+  void selectSessionForMarking(SessionForMarkingModel? session) {
+    selectedSession.value = session;
     filterStudentsForMarking();
   }
 
@@ -331,5 +434,81 @@ class FacultyStudentAttendanceController extends GetxController {
         .toList();
 
     studentRecords.value = filteredList;
+  }
+
+  // Start Attendance Marking API call (after image upload)
+  Future<bool> startAttendanceMarking(String imagePath, String notes) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      if (selectedSession.value == null) {
+        Get.snackbar(
+          'Error',
+          'Please select a session before uploading an image.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        isLoading.value = false;
+        return false;
+      }
+      // Create FormData for file upload
+      String fileName = imagePath.split('/').last;
+      dio.FormData formData = dio.FormData.fromMap({
+        "photo": await dio.MultipartFile.fromFile(
+          imagePath,
+          filename: fileName,
+        ),
+
+        "session_id": selectedSession.value!.sessionId
+            .toString(), // Use sessionId and convert to string
+        "notes": notes,
+      });
+
+      _logger.i(
+        'Calling start_attendance_marking for session ID: ${selectedSession.value!.sessionId}',
+      );
+      _logger.i('Notes: $notes');
+      _logger.i('Image path: $imagePath');
+
+      // Actual API call using ApiService's postFormData
+      final response = await _apiService.postFormData(
+        ApiEndpoints.FACULTY_START_ATTENDANCE_MARKING,
+        formData: formData,
+      );
+
+      if (response.statusCode == 200) {
+        Get.back(); // Navigate back to the previous screen (Mark Attendance tab)
+        
+        Get.snackbar(
+          'Success',
+          'Attendance marking initiated successfully!',
+          backgroundColor: AppColors.primaryGreen,
+          colorText: Colors.white,
+        );
+        return true; // Ensure we are on the Mark tab
+      } else {
+        errorMessage.value =
+            'Failed to initiate attendance marking. Please try again.';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return true;
+      }
+    } catch (e) {
+      errorMessage.value = 'An unexpected error occurred: ${e.toString()}';
+      _logger.e('Error starting attendance marking: $e');
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
   }
 }
