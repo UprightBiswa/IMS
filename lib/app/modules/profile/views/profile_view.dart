@@ -38,7 +38,7 @@ class ProfileView extends GetView<ProfileController> {
               style: const TextStyle(color: Colors.grey),
             ),
             Text(
-              authController.currentUser.value!.id,
+              authController.currentUser.value?.id ?? '',
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),

@@ -7,17 +7,21 @@ import 'package:logger/logger.dart';
 import '../../../../constants/api_endpoints.dart';
 import '../../../../services/api_service.dart';
 import '../../../../theme/app_colors.dart';
+import '../models/attendance_marking_status_response_model.dart';
 import '../models/session_for_marking_model.dart';
 import '../models/student_attendance_model.dart'; // Import student attendance models
 
 class FacultyStudentAttendanceController extends GetxController {
   final ApiService _apiService = ApiService();
   final Logger _logger = Logger();
-  final RxInt selectedStudentSubTab = 0.obs; // 0: Dashboard, 1: Record, 2: Mark
-  // overview, classes, students
+
+  // Tabs for FacultyStudentAttendanceTab (Dashboard, Record, Mark)
+  final RxInt selectedStudentSubTab = 0.obs;
+
+  // Tabs for FacultyStudentAttendanceDashboardView (Overview, Classes, Students)
   final RxInt selectedDashboardTab = 0.obs;
 
-  // Overview
+  // Loading/Error states
   final RxBool isLoading = true.obs;
   final RxBool isError = false.obs;
   final RxString errorMessage = ''.obs;
@@ -34,6 +38,10 @@ class FacultyStudentAttendanceController extends GetxController {
       <SessionForMarkingModel>[].obs;
   final Rx<SessionForMarkingModel?> selectedSession =
       Rx<SessionForMarkingModel?>(null);
+
+  // NEW: Rx variable to store attendance marking status response
+  final Rx<AttendanceMarkingStatusResponse?> attendanceMarkingStatusResponse =
+      Rx<AttendanceMarkingStatusResponse?>(null);
 
   final RxList<StudentBasicInfo> studentList = <StudentBasicInfo>[].obs;
 
@@ -105,6 +113,10 @@ class FacultyStudentAttendanceController extends GetxController {
 
   void changeStudentSubTab(int index) {
     selectedStudentSubTab.value = index;
+    if (index == 2) {
+      // If navigating to Mark tab
+      fetchTodaySessions(); // Ensure sessions are loaded
+    }
   }
 
   void changeDashboardTab(int index) {
@@ -298,6 +310,21 @@ class FacultyStudentAttendanceController extends GetxController {
               s.location == selectedSection.value &&
               s.topic == selectedSubject.value,
         );
+        // If a session is found and has a markingSessionUuid, fetch its status
+        if (selectedSession.value != null &&
+            selectedSession.value!.markingSessionUuid.isNotEmpty) {
+          await fetchAttendanceMarkingStatus(
+            selectedSession.value!.markingSessionUuid,
+          );
+        } else {
+          // If no markingSessionUuid or no session, clear studentsForMarking
+          studentsForMarking.clear();
+          attendanceMarkingStatusResponse.value = null;
+        }
+      } else {
+        selectedSession.value = null; // No sessions available
+        studentsForMarking.clear(); // Clear students if no sessions
+        attendanceMarkingStatusResponse.value = null;
       }
     } catch (e) {
       errorMessage.value =
@@ -307,6 +334,63 @@ class FacultyStudentAttendanceController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // NEW: Function to fetch attendance marking status
+  Future<void> fetchAttendanceMarkingStatus(String markingSessionUuid) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    attendanceMarkingStatusResponse.value = null; // Clear previous data
+    studentsForMarking.clear(); // Clear students list before fetching new ones
+
+    try {
+      // Construct the API endpoint with the session UUID
+      final String apiUrl = ApiEndpoints.FACULTY_ATTENDANCE_MARKING_STATUS(markingSessionUuid);
+      final response = await _apiService.get(apiUrl);
+
+      final parsedResponse = AttendanceMarkingStatusResponse.fromJson(response.data);
+      attendanceMarkingStatusResponse.value = parsedResponse;
+
+      // Populate studentsForMarking from the fetched data
+      studentsForMarking.value = parsedResponse.data.students.map((studentDetail) {
+        // Map API status to the display status used in StudentAttendanceMark
+        String displayStatus;
+        switch (studentDetail.status) {
+          case 'present':
+            displayStatus = 'Present';
+            break;
+          case 'absent':
+            displayStatus = 'Absent';
+            break;
+          case 'late':
+            displayStatus = 'Late';
+            break;
+          case 'excused':
+            displayStatus = 'Excused';
+            break;
+          case 'not_marked':
+          default:
+            displayStatus = 'Unmarked';
+            break;
+        }
+        return StudentAttendanceMark(
+          id: studentDetail.studentId.toString(),
+          rollNo: studentDetail.studentCode,
+          name: studentDetail.name,
+          initialStatus: displayStatus,
+        );
+      }).toList();
+
+    } catch (e) {
+      errorMessage.value =
+          'An unexpected error occurred fetching attendance status: ${e.toString()}';
+      _logger.e('Error fetching attendance marking status: $e');
+      attendanceMarkingStatusResponse.value = null; // Clear on error
+      studentsForMarking.clear(); // Clear students on error
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 
   // --- Mark Attendance Methods (existing) ---
   void selectCourse(String? course) {
@@ -345,9 +429,19 @@ class FacultyStudentAttendanceController extends GetxController {
     filterStudentsForMarking();
   }
 
-  void selectSessionForMarking(SessionForMarkingModel? session) {
+  // void selectSessionForMarking(SessionForMarkingModel? session) {
+  //   selectedSession.value = session;
+  //   filterStudentsForMarking();
+  // }
+  // MODIFIED: This now also triggers fetching of attendance marking status
+  void selectSessionForMarking(SessionForMarkingModel? session) async {
     selectedSession.value = session;
-    filterStudentsForMarking();
+    if (session != null && session.markingSessionUuid.isNotEmpty) {
+      await fetchAttendanceMarkingStatus(session.markingSessionUuid);
+    } else {
+      studentsForMarking.clear();
+      attendanceMarkingStatusResponse.value = null;
+    }
   }
 
   void toggleShowPreviousAttendance(bool? value) {
@@ -478,7 +572,7 @@ class FacultyStudentAttendanceController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.back(); // Navigate back to the previous screen (Mark Attendance tab)
-        
+
         Get.snackbar(
           'Success',
           'Attendance marking initiated successfully!',

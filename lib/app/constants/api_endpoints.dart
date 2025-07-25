@@ -41,6 +41,7 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/faculty/student_studentwise_attendance_mapp';
       // Faculty Student Attendance Marking Endpoints
   static const String FACULTY_TODAY_SESSIONS = '/api/v1/attendance/dashboard/faculty/today_sessions';
+  static String FACULTY_ATTENDANCE_MARKING_STATUS(String uuid) => '/api/v1/attendance/dashboard/faculty/attendance_marking_status/$uuid';
   static const String FACULTY_START_ATTENDANCE_MARKING = '/api/v1/attendance/dashboard/faculty/start_attendance_marking';
   
   // NEW Faculty Check-in/Log Endpoints (PLACEHOLDERS)
