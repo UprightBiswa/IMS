@@ -284,6 +284,16 @@ class PhotoUploadView extends GetView<PhotoUploadController> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              // *** NEW: Logout option ***
+              TextButton(
+                onPressed: () {
+                  authController.signOut(); // Call signOut from AuthController
+                },
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+              ),
               const SizedBox(height: 30),
             ],
           ),

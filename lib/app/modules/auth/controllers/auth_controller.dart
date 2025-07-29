@@ -49,7 +49,7 @@ class AuthController extends GetxController {
     } else {
       await _loadUserFromStorage();
       if (currentUser.value != null) {
-        _redirectToRoleBasedRoute(currentUser.value!.role, checkPhoto: true);
+        _redirectToRoleBasedRoute(currentUser.value!.role);
       } else {
         await _clearUserData();
         Get.offAllNamed(Routes.LOGIN);
@@ -89,7 +89,7 @@ class AuthController extends GetxController {
           backgroundColor: Colors.green,
         );
 
-        _redirectToRoleBasedRoute(role, checkPhoto: true);
+        _redirectToRoleBasedRoute(role);
       } else {
         Get.back();
         Get.snackbar(
@@ -108,11 +108,10 @@ class AuthController extends GetxController {
   }
 
   // New method to update user photo information
-  Future<void> updatePhotoUrl(String? newPhotoUrl) async {
+  Future<void> updatePhotoUploadStatus( String status) async {
     if (currentUser.value != null) {
       currentUser.value = currentUser.value!.copyWith(
-        photoUrl: newPhotoUrl,
-        photoUploaded: newPhotoUrl != null && newPhotoUrl.isNotEmpty,
+        photoUploadStatus: status,
       );
       // Also update in SharedPreferences
       await _prefs.setString(
@@ -122,10 +121,10 @@ class AuthController extends GetxController {
     }
   }
 
-  void _redirectToRoleBasedRoute(String role, {bool checkPhoto = false}) {
+  void _redirectToRoleBasedRoute(String role) {
     switch (role) {
       case 'student':
-        if (checkPhoto && currentUser.value?.photoUploaded == false) {
+        if ( currentUser.value?.photoUploaded == false) {
           Get.offAllNamed(
             Routes.PHOTO_UPLOAD,
           ); // Redirect to photo upload if not uploaded

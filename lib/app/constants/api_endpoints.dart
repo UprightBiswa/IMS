@@ -1,21 +1,20 @@
 class ApiEndpoints {
-
-  static const String BASE_URL = '{{base_url}}/api/v1';
-
+  static const String BASE_URL = '/api/v1';
 
   static const String LOGIN = '/api/v1/auth/login';
   static const String REFRESH_TOKEN = '/auth/refresh-token';
   static const String PROFILE = '/api/v1/profile';
 
-
-  static const String UPLOAD_PROFILE_PHOTO = '$BASE_URL/user/profile-photo';
+  static const String UPLOAD_PHOTO =
+      '$BASE_URL/attendance/student/upload_photo';
 
   // Student Attendance Dashboard API
-  static const String STUDENT_ATTENDANCE_DASHBOARD = '/api/v1/attendance/student/dashboard';
+  static const String STUDENT_ATTENDANCE_DASHBOARD =
+      '/api/v1/attendance/student/dashboard';
   // Leave Management Endpoints
-  static const String STUDENT_LEAVE_APPLICATIONS = '/api/v1/leaves/my-applications';
+  static const String STUDENT_LEAVE_APPLICATIONS =
+      '/api/v1/leaves/my-applications';
   static const String APPLY_LEAVE = '/api/v1/leaves/apply';
-
 
   // Example admin endpoints
   static const String ADMIN_DASHBOARD_STUDENT_MAPP =
@@ -24,11 +23,10 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/admin/faculty_mapp';
   static const String ADMIN_DASHBOARD_STAFF_MAPP =
       '/api/v1/attendance/dashboard/admin/staff_mapp';
-      // Admin Leave Management Endpoints (NEW)
+  // Admin Leave Management Endpoints (NEW)
   static const String ADMIN_ALL_LEAVE_APPLICATIONS = '/api/v1/leaves/admin/all';
-  static String ADMIN_REVIEW_LEAVE(int id) => '/api/v1/leaves/admin/review/$id'; // Dynamic endpoint for review
-
-
+  static String ADMIN_REVIEW_LEAVE(int id) =>
+      '/api/v1/leaves/admin/review/$id'; // Dynamic endpoint for review
 
   // {{base_url}}/api/v1/attendance/dashboard/admin/students?academic_year=2025 {{base_url}}/api/v1/attendance/dashboard/admin/student/classwise
 
@@ -46,16 +44,21 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/faculty/student_attendance_dashboard_mapp';
   static const String FACULTY_STUDENTWISE_ATTENDANCE_MAPP =
       '/api/v1/attendance/dashboard/faculty/student_studentwise_attendance_mapp';
-      // Faculty Student Attendance Marking Endpoints
-  static const String FACULTY_TODAY_SESSIONS = '/api/v1/attendance/dashboard/faculty/today_sessions';
+  // Faculty Student Attendance Marking Endpoints
+  static const String FACULTY_TODAY_SESSIONS =
+      '/api/v1/attendance/dashboard/faculty/today_sessions';
   // NEW API Endpoint for fetching sessions with filters and pagination
   static const String FACULTY_SESSIONS_FILTERED = '/api/v1/attendance/sessions';
 
-  static String FACULTY_ATTENDANCE_MARKING_STATUS(String uuid) => '/api/v1/attendance/dashboard/faculty/attendance_marking_status/$uuid';
-  static const String FACULTY_START_ATTENDANCE_MARKING = '/api/v1/attendance/dashboard/faculty/start_attendance_marking';
-  
+  static String FACULTY_ATTENDANCE_MARKING_STATUS(String uuid) =>
+      '/api/v1/attendance/dashboard/faculty/attendance_marking_status/$uuid';
+  static const String FACULTY_START_ATTENDANCE_MARKING =
+      '/api/v1/attendance/dashboard/faculty/start_attendance_marking';
+
   // NEW Faculty Check-in/Log Endpoints (PLACEHOLDERS)
   static const String FACULTY_CHECK_IN = '/api/v1/attendance/faculty/check_in';
-  static const String FACULTY_CHECK_OUT = '/api/v1/attendance/faculty/check_out';
-  static const String FACULTY_ATTENDANCE_LOGS = '/api/v1/attendance/faculty/mobile/log';
+  static const String FACULTY_CHECK_OUT =
+      '/api/v1/attendance/faculty/check_out';
+  static const String FACULTY_ATTENDANCE_LOGS =
+      '/api/v1/attendance/faculty/mobile/log';
 }

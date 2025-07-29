@@ -3,16 +3,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart' as dio; // Use alias to avoid conflict with GetX
 import 'package:flutter/material.dart';
 
+import '../../../../constants/api_endpoints.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../services/api_service.dart';
 import '../../../auth/controllers/auth_controller.dart'; // For snackbar
 
-enum PhotoUploadStatus {
-  initial,
-  selected,
-  uploaded,
-  error,
-}
+enum PhotoUploadStatus { initial, selected, uploaded, error }
 
 class PhotoUploadController extends GetxController {
   final AuthController _authController = Get.find<AuthController>();
@@ -40,7 +36,8 @@ class PhotoUploadController extends GetxController {
       if (image != null) {
         // Check file size (max 5MB)
         final fileSize = await image.length();
-        if (fileSize > 5 * 1024 * 1024) { // 5 MB in bytes
+        if (fileSize > 5 * 1024 * 1024) {
+          // 5 MB in bytes
           Get.snackbar(
             "File Size Error",
             "Please select an image smaller than 5MB.",
@@ -83,24 +80,21 @@ class PhotoUploadController extends GetxController {
     try {
       String fileName = selectedImage.value!.path.split('/').last;
       dio.FormData formData = dio.FormData.fromMap({
-        "profile_photo": await dio.MultipartFile.fromFile(
+        "photo": await dio.MultipartFile.fromFile(
           selectedImage.value!.path,
           filename: fileName,
         ),
       });
 
-      // Dummy API Call for now
-      // In a real scenario, replace this with your actual API endpoint for photo upload
-      // For demonstration, we'll simulate a 2-second delay and then success/failure.
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Simulate API response
-      final bool success = true; // Set to false to test failure case
-      final String dummyPhotoUrl = 'https://example.com/uploads/$fileName'; // Simulate a photo URL
-
-      if (success) {
+      // Actual API call
+      final response = await _apiService.postFormData(
+        ApiEndpoints.UPLOAD_PHOTO, // Ensure this endpoint is defined correctly
+        formData: formData,
+      );
+      print("Upload photo response: ${response.data}");
+      if (response.statusCode == 200 && response.data['success'] == true) {
         // Update user model and SharedPreferences
-        await _authController.updatePhotoUrl(dummyPhotoUrl);
+        await _authController.updatePhotoUploadStatus("Uploaded");
         photoUploadStatus.value = PhotoUploadStatus.uploaded;
 
         Get.back(); // Dismiss dialog

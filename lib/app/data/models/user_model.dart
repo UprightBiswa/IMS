@@ -4,7 +4,7 @@ class UserModels {
   final String email;
   final String role; // 'student', 'faculty', 'admin'
   final String? photoUrl; // Optional
-  final bool photoUploaded; // NEW FIELD
+  final String photoUploadStatus;
   final String? firstName; // Added
   final String? lastName; // Added
 
@@ -14,18 +14,20 @@ class UserModels {
     required this.email,
     required this.role,
     this.photoUrl,
-    this.photoUploaded = false,
+    this.photoUploadStatus = "",
     this.firstName, // Initialize
     this.lastName, // Initialize
   });
 
+  // Helper getter to check if photo is uploaded
+  bool get photoUploaded => photoUploadStatus == "Uploaded";
+
   factory UserModels.fromJson(Map<String, dynamic> json) {
     final String? photoUrl = json['photoUrl'] as String?;
-    final bool photoUploaded = photoUrl != null && photoUrl.isNotEmpty;
-
-    final String? firstName =
-        json['first_name'] as String?; // Extract first_name
-    final String? lastName = json['last_name'] as String?; // Extract last_name
+    final String? firstName = json['first_name'] as String?;
+    final String? lastName = json['last_name'] as String?;
+    final String photoUploadStatus =
+        json['photo_upload_status'] as String? ?? "";
 
     return UserModels(
       id: json['id'].toString(),
@@ -34,7 +36,7 @@ class UserModels {
       email: json['email'] as String,
       role: json['role'] as String,
       photoUrl: photoUrl,
-      photoUploaded: photoUploaded,
+      photoUploadStatus: photoUploadStatus,
       firstName: firstName, // Store first_name
       lastName: lastName, // Store last_name
     );
@@ -47,21 +49,21 @@ class UserModels {
       'email': email,
       'role': role,
       'photoUrl': photoUrl,
-      'photoUploaded': photoUploaded,
+      'photo_upload_status': photoUploadStatus,
       'first_name': firstName, // Include first_name for proper reconstruction
       'last_name': lastName, // Include last_name for proper reconstruction
     };
   }
 
   // Helper method to create a copy with updated photoUrl and photoUploaded status
-  UserModels copyWith({String? photoUrl, bool? photoUploaded}) {
+  UserModels copyWith({String? photoUrl, String? photoUploadStatus}) {
     return UserModels(
       id: id,
       name: name,
       email: email,
       role: role,
       photoUrl: photoUrl ?? this.photoUrl,
-      photoUploaded: photoUploaded ?? this.photoUploaded,
+      photoUploadStatus: photoUploadStatus ?? this.photoUploadStatus,
       firstName: firstName,
       lastName: lastName,
     );
