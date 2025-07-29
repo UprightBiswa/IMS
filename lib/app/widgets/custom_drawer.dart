@@ -64,8 +64,8 @@ class CustomDrawer extends GetView<ProfileController> {
                 const SizedBox(height: 16),
             
                 // Main Items
-                _drawerItem('Home', () => Get.offAllNamed(Routes.HOME)),
-                _drawerItem('Attendance', () => Get.toNamed(Routes.ATTENDANCE)),
+                _drawerItem('Home', () => Get.offAllNamed(Routes.ATTENDANCE)),
+                _drawerItem('Attendance', () => Get.offAllNamed(Routes.ATTENDANCE)),
                 _drawerItem('Timetable', () => Get.toNamed(Routes.TIMETABLE)),
                 _drawerItem('Assignments', () => Get.toNamed(Routes.ASSIGNMENTS)),
                 _drawerItem('Announcement', () => Get.toNamed(Routes.MESSAGES)),

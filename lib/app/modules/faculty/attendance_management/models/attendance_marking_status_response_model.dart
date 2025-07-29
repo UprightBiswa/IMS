@@ -23,22 +23,26 @@ class AttendanceMarkingStatusResponse {
 }
 
 class AttendanceMarkingData {
-  final MarkingSession markingSession;
-  final SessionDetails sessionDetails;
+  final MarkingSession? markingSession;
+  final SessionDetails? sessionDetails;
   final AttendanceStatistics statistics;
   final List<StudentAttendanceDetail> students;
 
   AttendanceMarkingData({
-    required this.markingSession,
-    required this.sessionDetails,
+    this.markingSession,
+    this.sessionDetails,
     required this.statistics,
     required this.students,
   });
 
   factory AttendanceMarkingData.fromJson(Map<String, dynamic> json) {
     return AttendanceMarkingData(
-      markingSession: MarkingSession.fromJson(json['marking_session']),
-      sessionDetails: SessionDetails.fromJson(json['session_details']),
+      markingSession: json['marking_session'] != null
+          ? MarkingSession.fromJson(json['marking_session'])
+          : null,
+      sessionDetails: json['session_details'] != null
+          ? SessionDetails.fromJson(json['session_details'])
+          : null,
       statistics: AttendanceStatistics.fromJson(json['statistics']),
       students: (json['students'] as List)
           .map((i) => StudentAttendanceDetail.fromJson(i))
@@ -137,16 +141,23 @@ class AttendanceStatistics {
 
   factory AttendanceStatistics.fromJson(Map<String, dynamic> json) {
     return AttendanceStatistics(
-      absent: json['absent'] as int,
-      completionPercentage: (json['completion_percentage'] as num).toDouble(),
-      excused: json['excused'] as int,
-      late: json['late'] as int,
-      markedStudents: json['marked_students'] as int,
-      present: json['present'] as int,
-      totalStudents: json['total_students'] as int,
-      unmarkedStudents: json['unmarked_students'] as int,
+      absent: parseInt(json['absent']),
+      completionPercentage: (json['completion_percentage'] ?? 0).toDouble(),
+      excused: json['excused'] ?? 0,
+      late: json['late'] ?? 0,
+      markedStudents: json['marked_students'] ?? 0,
+      present: json['present'] ?? 0,
+      totalStudents: json['total_students'] ?? 0,
+      unmarkedStudents: json['unmarked_students'] ?? 0,
     );
   }
+}
+
+int parseInt(dynamic value) {
+  if (value == null) return 0;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
 }
 
 class StudentAttendanceDetail {
@@ -154,7 +165,8 @@ class StudentAttendanceDetail {
   final String? markedAt; // Can be null
   final String name;
   final String? notes; // Can be null
-  final String status; // e.g., 'not_marked', 'present', 'absent', 'late', 'excused'
+  final String
+  status; // e.g., 'not_marked', 'present', 'absent', 'late', 'excused'
   final String studentCode;
   final int studentId;
 

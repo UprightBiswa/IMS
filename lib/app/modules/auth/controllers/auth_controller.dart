@@ -49,7 +49,7 @@ class AuthController extends GetxController {
     } else {
       await _loadUserFromStorage();
       if (currentUser.value != null) {
-        _redirectToRoleBasedRoute(currentUser.value!.role);
+        _redirectToRoleBasedRoute(currentUser.value!.role, checkPhoto: true);
       } else {
         await _clearUserData();
         Get.offAllNamed(Routes.LOGIN);
@@ -89,7 +89,7 @@ class AuthController extends GetxController {
           backgroundColor: Colors.green,
         );
 
-        _redirectToRoleBasedRoute(role);
+        _redirectToRoleBasedRoute(role, checkPhoto: true);
       } else {
         Get.back();
         Get.snackbar(
@@ -106,6 +106,75 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // New method to update user photo information
+  Future<void> updatePhotoUrl(String? newPhotoUrl) async {
+    if (currentUser.value != null) {
+      currentUser.value = currentUser.value!.copyWith(
+        photoUrl: newPhotoUrl,
+        photoUploaded: newPhotoUrl != null && newPhotoUrl.isNotEmpty,
+      );
+      // Also update in SharedPreferences
+      await _prefs.setString(
+        AppConstants.USER_DATA_KEY,
+        json.encode(currentUser.value!.toJson()),
+      );
+    }
+  }
+
+  void _redirectToRoleBasedRoute(String role, {bool checkPhoto = false}) {
+    switch (role) {
+      case 'student':
+        if (checkPhoto && currentUser.value?.photoUploaded == false) {
+          Get.offAllNamed(
+            Routes.PHOTO_UPLOAD,
+          ); // Redirect to photo upload if not uploaded
+        } else {
+          Get.offAllNamed(Routes.ATTENDANCE);
+        }
+        break;
+      case 'faculty':
+        Get.offAllNamed(Routes.FACULTY_ATTENDANCE);
+        break;
+      case 'admin':
+        Get.offAllNamed(Routes.ADMIN_ATTENDANCE);
+        break;
+      default:
+        Get.snackbar(
+          "Role Error",
+          "Unknown user role. Please contact support.",
+          backgroundColor: Colors.orange,
+        );
+        signOut();
+    }
+  }
+
+  Future<void> signOut() async {
+    isLoading.value = true;
+    try {
+      await _clearUserData();
+      Get.offAllNamed(Routes.LOGIN);
+      Get.snackbar(
+        "Logged Out",
+        "You have been logged out.",
+        backgroundColor: Colors.green,
+      );
+    } catch (e) {
+      Get.snackbar("Logout Error", e.toString(), backgroundColor: Colors.red);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _clearUserData() async {
+    await _prefs.remove(AppConstants.ACCESS_TOKEN_KEY);
+    await _prefs.remove(AppConstants.USER_ROLE_KEY);
+    await _prefs.remove(AppConstants.USER_DATA_KEY);
+    await _prefs.setBool(AppConstants.HAS_SEEN_GET_STARTED_KEY, false);
+    currentUser.value = null;
+  }
+}
+
 
   // User Login (Email/Password) - Now uses dummy data
   // Future<void> login(String email, String password, String role) async {
@@ -173,50 +242,3 @@ class AuthController extends GetxController {
 
   //   isLoading.value = false;
   // }
-
-  void _redirectToRoleBasedRoute(String role) {
-    switch (role) {
-      case 'student':
-        Get.offAllNamed(Routes.HOME);
-        break;
-      case 'faculty':
-        Get.offAllNamed(Routes.FACULTY_ATTENDANCE);
-        break;
-      case 'admin':
-        Get.offAllNamed(Routes.ADMIN_ATTENDANCE);
-        break;
-      default:
-        Get.snackbar(
-          "Role Error",
-          "Unknown user role. Please contact support.",
-          backgroundColor: Colors.orange,
-        );
-        signOut();
-    }
-  }
-
-  Future<void> signOut() async {
-    isLoading.value = true;
-    try {
-      await _clearUserData();
-      Get.offAllNamed(Routes.LOGIN);
-      Get.snackbar(
-        "Logged Out",
-        "You have been logged out.",
-        backgroundColor: Colors.green,
-      );
-    } catch (e) {
-      Get.snackbar("Logout Error", e.toString(), backgroundColor: Colors.red);
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> _clearUserData() async {
-    await _prefs.remove(AppConstants.ACCESS_TOKEN_KEY);
-    await _prefs.remove(AppConstants.USER_ROLE_KEY);
-    await _prefs.remove(AppConstants.USER_DATA_KEY);
-    await _prefs.setBool(AppConstants.HAS_SEEN_GET_STARTED_KEY, false);
-    currentUser.value = null;
-  }
-}

@@ -8,7 +8,8 @@ import '../../../../../../../theme/app_colors.dart';
 import '../../../../controllers/faculty_my_attendance_controller.dart';
 import '../../../../widgets/attendance_log_card.dart';
 
-class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> {
+class FacultyMyAttendanceLogView
+    extends GetView<FacultyMyAttendanceController> {
   const FacultyMyAttendanceLogView({super.key});
 
   @override
@@ -25,49 +26,52 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
         // Attendance Log List
         SizedBox(
           height: MediaQuery.of(context).size.height - 300,
-          child: Expanded(
-            child: Obx(() {
-              if (controller.isLoadingLogs.value && controller.attendanceLogs.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (controller.errorMessage.isNotEmpty) {
-                return Center(child: Text(controller.errorMessage.value));
-              } else if (controller.attendanceLogs.isEmpty) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: Text(
-                      'No attendance logs found for the selected filters.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
+          child: Obx(() {
+            if (controller.isLoadingLogs.value &&
+                controller.attendanceLogs.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (controller.errorMessage.isNotEmpty) {
+              return Center(child: Text(controller.errorMessage.value));
+            } else if (controller.attendanceLogs.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: Text(
+                    'No attendance logs found for the selected filters.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
                   ),
-                );
-              }
-              return RefreshIndicator(
-                onRefresh: () => controller.fetchAttendanceLogs(isRefresh: true),
-                child: ListView.builder(
-                  controller: ScrollController()..addListener(() {
+                ),
+              );
+            }
+            return RefreshIndicator(
+              onRefresh: () => controller.fetchAttendanceLogs(isRefresh: true),
+              child: ListView.builder(
+                controller: ScrollController()
+                  ..addListener(() {
                     if (controller.hasMoreLogs.value &&
                         !controller.isLoadMoreLoading.value &&
-                        ScrollController().position.pixels == ScrollController().position.maxScrollExtent) {
+                        ScrollController().position.pixels ==
+                            ScrollController().position.maxScrollExtent) {
                       controller.fetchAttendanceLogs();
                     }
                   }),
-                  itemCount: controller.attendanceLogs.length + (controller.hasMoreLogs.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == controller.attendanceLogs.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final logEntry = controller.attendanceLogs[index];
-                    return AttendanceLogCard(logEntry: logEntry);
-                  },
-                ),
-              );
-            }),
-          ),
+                itemCount:
+                    controller.attendanceLogs.length +
+                    (controller.hasMoreLogs.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == controller.attendanceLogs.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final logEntry = controller.attendanceLogs[index];
+                  return AttendanceLogCard(logEntry: logEntry);
+                },
+              ),
+            );
+          }),
         ),
         const SizedBox(height: 16),
         // Export Button
@@ -84,7 +88,9 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
               foregroundColor: AppColors.primaryBlue,
               side: const BorderSide(color: AppColors.primaryBlue),
               padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
         ),
@@ -107,7 +113,10 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
               ),
               filled: true,
               fillColor: Colors.grey[100],
-              contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 10,
+              ),
             ),
             style: const TextStyle(fontSize: 14),
           ),
@@ -145,18 +154,48 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
         ),
         child: Row(
           children: [
-            _buildLogFilterButton('All', 'All', controller.selectedLogStatusFilter.value, controller.setLogStatusFilter),
-            _buildLogFilterButton('Present', 'Present', controller.selectedLogStatusFilter.value, controller.setLogStatusFilter),
-            _buildLogFilterButton('Absent', 'Absent', controller.selectedLogStatusFilter.value, controller.setLogStatusFilter),
-            _buildLogFilterButton('Late', 'Late', controller.selectedLogStatusFilter.value, controller.setLogStatusFilter),
-            _buildLogFilterButton('Leave', 'Leave', controller.selectedLogStatusFilter.value, controller.setLogStatusFilter),
+            _buildLogFilterButton(
+              'All',
+              'All',
+              controller.selectedLogStatusFilter.value,
+              controller.setLogStatusFilter,
+            ),
+            _buildLogFilterButton(
+              'Present',
+              'Present',
+              controller.selectedLogStatusFilter.value,
+              controller.setLogStatusFilter,
+            ),
+            _buildLogFilterButton(
+              'Absent',
+              'Absent',
+              controller.selectedLogStatusFilter.value,
+              controller.setLogStatusFilter,
+            ),
+            _buildLogFilterButton(
+              'Late',
+              'Late',
+              controller.selectedLogStatusFilter.value,
+              controller.setLogStatusFilter,
+            ),
+            _buildLogFilterButton(
+              'Leave',
+              'Leave',
+              controller.selectedLogStatusFilter.value,
+              controller.setLogStatusFilter,
+            ),
           ],
         ),
       );
     });
   }
 
-  Widget _buildLogFilterButton(String label, String value, String currentValue, Function(String) onTap) {
+  Widget _buildLogFilterButton(
+    String label,
+    String value,
+    String currentValue,
+    Function(String) onTap,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(value),
@@ -171,8 +210,12 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: currentValue == value ? AppColors.primaryBlue : Colors.grey[700],
-                fontWeight: currentValue == value ? FontWeight.bold : FontWeight.normal,
+                color: currentValue == value
+                    ? AppColors.primaryBlue
+                    : Colors.grey[700],
+                fontWeight: currentValue == value
+                    ? FontWeight.bold
+                    : FontWeight.normal,
               ),
             ),
           ),
@@ -181,31 +224,36 @@ class FacultyMyAttendanceLogView extends GetView<FacultyMyAttendanceController> 
     );
   }
 
-  void _showLogFilterDialog(BuildContext context, FacultyMyAttendanceController controller) {
+  void _showLogFilterDialog(
+    BuildContext context,
+    FacultyMyAttendanceController controller,
+  ) {
     Get.dialog(
       AlertDialog(
         title: const Text('Filter Attendance Log'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedLogStatusFilter.value,
-                  decoration: const InputDecoration(
-                    labelText: 'Status',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: ['All', 'Present', 'Absent', 'Late', 'Leave']
-                      .map((status) => DropdownMenuItem(
-                            value: status,
-                            child: Text(status),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      controller.setLogStatusFilter(value);
-                    }
-                  },
-                )),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedLogStatusFilter.value,
+                decoration: const InputDecoration(
+                  labelText: 'Status',
+                  border: OutlineInputBorder(),
+                ),
+                items: ['All', 'Present', 'Absent', 'Late', 'Leave']
+                    .map(
+                      (status) =>
+                          DropdownMenuItem(value: status, child: Text(status)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.setLogStatusFilter(value);
+                  }
+                },
+              ),
+            ),
             const SizedBox(height: 16),
             // You can add more filters here, e.g., for specific date ranges if not already in main row
           ],

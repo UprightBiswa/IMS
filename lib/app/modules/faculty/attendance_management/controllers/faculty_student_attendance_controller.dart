@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:intl/intl.dart';
 
 import 'package:logger/logger.dart';
 import '../../../../constants/api_endpoints.dart';
 import '../../../../services/api_service.dart';
 import '../../../../theme/app_colors.dart';
 import '../models/attendance_marking_status_response_model.dart';
+import '../models/session_for_date_model.dart';
 import '../models/session_for_marking_model.dart';
 import '../models/student_attendance_model.dart'; // Import student attendance models
 
@@ -102,6 +104,12 @@ class FacultyStudentAttendanceController extends GetxController {
   final RxList<StudentRecord> studentRecords = StudentRecord.dummyList().obs;
   final RxString recordSearchQuery = ''.obs;
 
+  // Pagination for sessions
+  final RxInt currentPage = 1.obs;
+  final RxInt perPage = 20.obs;
+  final RxInt totalPages = 1.obs;
+  final RxInt totalSessions = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -179,6 +187,7 @@ class FacultyStudentAttendanceController extends GetxController {
     } catch (e) {
       isError.value = true;
       errorMessage.value = 'Error: ${e.toString()}';
+      // print('error:${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -259,6 +268,8 @@ class FacultyStudentAttendanceController extends GetxController {
       ]; // Dummy options
     } catch (e) {
       isError.value = true;
+      print('error:${e.toString()}');
+
       errorMessage.value = 'Error fetching students: ${e.toString()}';
     } finally {
       isLoading.value = false;
@@ -270,8 +281,13 @@ class FacultyStudentAttendanceController extends GetxController {
     isLoading.value = true;
     errorMessage.value = '';
     try {
+      final String formattedDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(markAttendanceDate.value);
+
       final response = await _apiService.get(
         ApiEndpoints.FACULTY_TODAY_SESSIONS,
+        queryParameters: {'session_date': formattedDate},
       );
       final List<dynamic> sessionsJson = response.data['data']['sessions'];
       todaySessions.value = sessionsJson
@@ -335,6 +351,134 @@ class FacultyStudentAttendanceController extends GetxController {
     }
   }
 
+  // // MODIFIED: fetchTodaySessions to use the new API endpoint with date and pagination
+  // Future<void> fetchTodaySessions({int page = 1, int perPage = 20}) async {
+  //   isLoading.value = true;
+  //   errorMessage.value = '';
+  //   try {
+  //     final String formattedDate = DateFormat('yyyy-MM-dd').format(markAttendanceDate.value);
+  //     final response = await _apiService.get(
+  //       ApiEndpoints.FACULTY_SESSIONS_FILTERED,
+  //       queryParameters: {
+  //         'page': page,
+  //         'per_page': perPage,
+  //         'session_date': formattedDate,
+  //         // 'course_id': 1, // Uncomment and set if needed
+  //         // 'faculty_id': 1, // Uncomment and set if needed
+  //         // 'session_type': 'lecture', // Uncomment and set if needed
+  //         // 'start_date': '2024-01-01', // Uncomment and set if needed
+  //         // 'end_date': '2024-01-31', // Uncomment and set if needed
+  //       },
+  //     );
+
+  //     final sessionListResponse = SessionListResponse.fromJson(response.data);
+
+  //     // Update pagination info
+  //     currentPage.value = sessionListResponse.pagination.currentPage;
+  //     this.perPage.value = sessionListResponse.pagination.perPage;
+  //     totalPages.value = sessionListResponse.pagination.totalPages;
+  //     totalSessions.value = sessionListResponse.pagination.totalRecords;
+
+  //     // Map SessionItem to SessionForMarkingModel
+  //     todaySessions.value = sessionListResponse.sessions.map((sessionItem) {
+  //       return SessionForMarkingModel(
+  //         sessionId: sessionItem.id,
+  //         courseCode: sessionItem.courseCode,
+  //         courseTitle: sessionItem.courseTitle,
+  //         durationMinutes: sessionItem.durationMinutes,
+  //         enrolledStudents: 0, // This info is not in SessionItem, default to 0
+  //         location: sessionItem.location,
+  //         // markingSessionUuid and markingStatus are not in this API response.
+  //         // They must come from the attendance_marking_status API or be handled differently.
+  //         // For now, setting them to null.
+  //         markingSessionUuid: sessionItem.id.toString(),
+  //         markingStatus: sessionItem.sessionTime,
+  //         sessionTime: sessionItem.sessionTime,
+  //         topic: sessionItem.topic,
+  //         sessionType: sessionItem.sessionType,
+  //       );
+  //     }).toList();
+
+  //     if (todaySessions.isNotEmpty) {
+  //       // Update dropdowns based on the first session or a default logic
+  //       // This logic might need refinement if you want to preserve user's previous selections
+  //       // across date changes. For simplicity, we'll select the first available.
+  //       selectedCourse.value = todaySessions.first.courseTitle;
+  //       sections.value = todaySessions
+  //           .where((s) => s.courseTitle == selectedCourse.value)
+  //           .map((s) => s.location)
+  //           .toSet()
+  //           .toList();
+  //       if (sections.isNotEmpty) selectedSection.value = sections.first;
+
+  //       subjects.value = todaySessions
+  //           .where((s) =>
+  //               s.courseTitle == selectedCourse.value &&
+  //               s.location == selectedSection.value)
+  //           .map((s) => s.topic)
+  //           .toSet()
+  //           .toList();
+  //       if (subjects.isNotEmpty) selectedSubject.value = subjects.first;
+
+  //       subSubjects.clear();
+
+  //       selectedSession.value = todaySessions.firstWhereOrNull(
+  //         (s) =>
+  //             s.courseTitle == selectedCourse.value &&
+  //             s.location == selectedSection.value &&
+  //             s.topic == selectedSubject.value,
+  //       );
+
+  //       // Check if markingSessionUuid is available before attempting to fetch marking status
+  //       if (selectedSession.value != null && selectedSession.value!.markingSessionUuid != null && selectedSession.value!.markingSessionUuid!.isNotEmpty) {
+  //         await fetchAttendanceMarkingStatus(selectedSession.value!.markingSessionUuid!);
+  //       } else {
+  //         studentsForMarking.clear();
+  //         attendanceMarkingStatusResponse.value = null;
+  //       }
+  //     } else {
+  //       selectedSession.value = null;
+  //       studentsForMarking.clear();
+  //       attendanceMarkingStatusResponse.value = null;
+  //       // Also clear course/section/subject dropdowns if no sessions
+  //       courses.clear();
+  //       sections.clear();
+  //       subjects.clear();
+  //       subSubjects.clear();
+  //       selectedCourse.value = '';
+  //       selectedSection.value = '';
+  //       selectedSubject.value = '';
+  //       selectedSubSubject.value = '';
+  //     }
+  //   }  catch (e) {
+  //     errorMessage.value =
+  //         'An unexpected error occurred fetching sessions: ${e.toString()}';
+  //     _logger.e('Error fetching today sessions: $e');
+  //     todaySessions.clear(); // Clear sessions on error
+  //     selectedSession.value = null;
+  //     studentsForMarking.clear();
+  //     attendanceMarkingStatusResponse.value = null;
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  // // New method to load next page of sessions
+  // Future<void> loadNextPageSessions() async {
+  //   if (currentPage.value < totalPages.value && !isLoading.value) {
+  //     currentPage.value++;
+  //     await fetchTodaySessions(page: currentPage.value, perPage: perPage.value);
+  //   }
+  // }
+
+  // // New method to load previous page of sessions
+  // Future<void> loadPreviousPageSessions() async {
+  //   if (currentPage.value > 1 && !isLoading.value) {
+  //     currentPage.value--;
+  //     await fetchTodaySessions(page: currentPage.value, perPage: perPage.value);
+  //   }
+  // }
+
   // NEW: Function to fetch attendance marking status
   Future<void> fetchAttendanceMarkingStatus(String markingSessionUuid) async {
     isLoading.value = true;
@@ -344,14 +488,22 @@ class FacultyStudentAttendanceController extends GetxController {
 
     try {
       // Construct the API endpoint with the session UUID
-      final String apiUrl = ApiEndpoints.FACULTY_ATTENDANCE_MARKING_STATUS(markingSessionUuid);
+      final String apiUrl = ApiEndpoints.FACULTY_ATTENDANCE_MARKING_STATUS(
+        markingSessionUuid,
+      );
       final response = await _apiService.get(apiUrl);
 
-      final parsedResponse = AttendanceMarkingStatusResponse.fromJson(response.data);
+      print(response.data);
+
+      final parsedResponse = AttendanceMarkingStatusResponse.fromJson(
+        response.data,
+      );
       attendanceMarkingStatusResponse.value = parsedResponse;
 
       // Populate studentsForMarking from the fetched data
-      studentsForMarking.value = parsedResponse.data.students.map((studentDetail) {
+      studentsForMarking.value = parsedResponse.data.students.map((
+        studentDetail,
+      ) {
         // Map API status to the display status used in StudentAttendanceMark
         String displayStatus;
         switch (studentDetail.status) {
@@ -379,7 +531,6 @@ class FacultyStudentAttendanceController extends GetxController {
           initialStatus: displayStatus,
         );
       }).toList();
-
     } catch (e) {
       errorMessage.value =
           'An unexpected error occurred fetching attendance status: ${e.toString()}';
@@ -390,7 +541,6 @@ class FacultyStudentAttendanceController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   // --- Mark Attendance Methods (existing) ---
   void selectCourse(String? course) {
@@ -427,13 +577,9 @@ class FacultyStudentAttendanceController extends GetxController {
   void selectMarkAttendanceDate(DateTime date) {
     markAttendanceDate.value = date;
     filterStudentsForMarking();
+    fetchTodaySessions();
   }
 
-  // void selectSessionForMarking(SessionForMarkingModel? session) {
-  //   selectedSession.value = session;
-  //   filterStudentsForMarking();
-  // }
-  // MODIFIED: This now also triggers fetching of attendance marking status
   void selectSessionForMarking(SessionForMarkingModel? session) async {
     selectedSession.value = session;
     if (session != null && session.markingSessionUuid.isNotEmpty) {
@@ -457,9 +603,7 @@ class FacultyStudentAttendanceController extends GetxController {
     }
   }
 
-  void filterStudentsForMarking() {
-    studentsForMarking.value = StudentAttendanceMark.dummyList();
-  }
+  void filterStudentsForMarking() {}
 
   void submitMarkedAttendance() {
     print('Submitting attendance:');

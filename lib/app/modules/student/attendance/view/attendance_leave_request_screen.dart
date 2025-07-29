@@ -98,7 +98,7 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
               const Text(
                 'Leave Requests',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Colors.black87,
                 ),
@@ -110,7 +110,10 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
                   Get.to(() => const ApplyLeaveScreen());
                 },
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Apply for Leave'),
+                label: const Text(
+                  'Apply for Leave',
+                  style: TextStyle(fontSize: 12),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.grey[700],
                   side: BorderSide(color: Colors.grey[400]!),
@@ -132,9 +135,11 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(16.0),
             ),
             child: Row(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
                   child: _buildSegmentButton(
@@ -242,10 +247,10 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(16.0),
         ),
         child: Center(
           child: Text(

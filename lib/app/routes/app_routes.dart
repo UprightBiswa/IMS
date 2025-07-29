@@ -6,7 +6,8 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
 
   // Student Routes
-  static const HOME = _Paths.HOME;
+  // static const HOME = _Paths.HOME;
+  static const PHOTO_UPLOAD = _Paths.PHOTO_UPLOAD;
   static const ATTENDANCE = _Paths.ATTENDANCE;
   static const SYLLABUS = _Paths.SYLLABUS;
   static const ASSIGNMENTS = _Paths.ASSIGNMENTS;
@@ -44,7 +45,8 @@ abstract class _Paths {
   static const PROFILE = '/profile';
 
   //student
-  static const HOME = '/home';
+  // static const HOME = '/home';
+  static const PHOTO_UPLOAD = '/photo-upload';
   static const ATTENDANCE = '/attendance';
   static const SYLLABUS = '/syllabus';
   static const ASSIGNMENTS = '/assignments';

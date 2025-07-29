@@ -92,7 +92,6 @@ class RecentClass {
   }
 }
 
-
 // New models for filters (placeholders, ideally fetched from API)
 class CourseFilter {
   final int id;
@@ -114,7 +113,6 @@ class AttendanceStatusFilter {
 
   AttendanceStatusFilter({required this.status, required this.displayName});
 }
-
 
 class AttendanceSummaryOfStudent {
   final int absentCount;
@@ -142,22 +140,22 @@ class AttendanceSummaryOfStudent {
       absentCount: json['absent_count'] ?? 0,
       excusedCount: json['excused_count'] ?? 0,
       lateCount: json['late_count'] ?? 0,
-      monthlyPercentage: (json['monthly_percentage'] as num?)?.toDouble() ?? 0.0,
-      overallPercentage: (json['overall_percentage'] as num?)?.toDouble() ?? 0.0,
+      monthlyPercentage:
+          (json['monthly_percentage'] as num?)?.toDouble() ?? 0.0,
+      overallPercentage:
+          (json['overall_percentage'] as num?)?.toDouble() ?? 0.0,
       presentCount: json['present_count'] ?? 0,
       recentPercentage: (json['recent_percentage'] as num?)?.toInt() ?? 0,
       totalSessions: json['total_sessions'] ?? 0,
     );
   }
 }
+
 class StudentCourseInfo {
   final List<String> courseCodes;
   final List<String> courseNames;
 
-  StudentCourseInfo({
-    required this.courseCodes,
-    required this.courseNames,
-  });
+  StudentCourseInfo({required this.courseCodes, required this.courseNames});
 
   factory StudentCourseInfo.fromJson(Map<String, dynamic> json) {
     return StudentCourseInfo(
@@ -176,7 +174,7 @@ class StudentBasicInfo {
   final StudentCourseInfo courses;
   final String departmentName;
   final String email;
-  final DateTime lastAttendanceDate;
+  final DateTime? lastAttendanceDate;
   final String semesterName;
 
   StudentBasicInfo({
@@ -188,7 +186,7 @@ class StudentBasicInfo {
     required this.courses,
     required this.departmentName,
     required this.email,
-    required this.lastAttendanceDate,
+    this.lastAttendanceDate,
     required this.semesterName,
   });
 
@@ -197,12 +195,16 @@ class StudentBasicInfo {
       rollNumber: json['roll_number'] ?? '',
       name: json['name'] ?? '',
       status: json['status'] ?? 'Unknown',
-      attendanceSummary: AttendanceSummaryOfStudent.fromJson(json['attendance_summary'] ?? {}),
+      attendanceSummary: AttendanceSummaryOfStudent.fromJson(
+        json['attendance_summary'] ?? {},
+      ),
       studentClass: json['class'] ?? '',
       courses: StudentCourseInfo.fromJson(json['courses'] ?? {}),
       departmentName: json['department_name'] ?? '',
       email: json['email'] ?? '',
-      lastAttendanceDate: DateTime.parse(json['last_attendance_date']),
+      lastAttendanceDate: json['last_attendance_date'] != null
+          ? DateTime.parse(json['last_attendance_date'])
+          : null,
       semesterName: json['semester_name'] ?? '',
     );
   }
@@ -222,53 +224,6 @@ class StudentAttendanceMark {
     required this.name,
     String initialStatus = 'Unmarked',
   }) : status = initialStatus.obs;
-
-  static List<StudentAttendanceMark> dummyList() {
-    return [
-      StudentAttendanceMark(
-        id: 'S001',
-        rollNo: '801',
-        name: 'Anjal Sharma',
-        initialStatus: 'Present',
-      ),
-      StudentAttendanceMark(
-        id: 'S002',
-        rollNo: '802',
-        name: 'Rohit Mehta',
-        initialStatus: 'Absent',
-      ),
-      StudentAttendanceMark(
-        id: 'S003',
-        rollNo: '803',
-        name: 'Priya Deshmukh',
-        initialStatus: 'Present',
-      ),
-      StudentAttendanceMark(
-        id: 'S004',
-        rollNo: '804',
-        name: 'Vikram Singh',
-        initialStatus: 'Present',
-      ),
-      StudentAttendanceMark(
-        id: 'S05',
-        rollNo: '805',
-        name: 'Nisha Patel',
-        initialStatus: 'Late',
-      ),
-      StudentAttendanceMark(
-        id: 'S06',
-        rollNo: '806',
-        name: 'Arjun Kumar',
-        initialStatus: 'Absent',
-      ),
-      StudentAttendanceMark(
-        id: 'S07',
-        rollNo: '807',
-        name: 'Sneha Gupta',
-        initialStatus: 'Present',
-      ),
-    ];
-  }
 }
 
 // Student Attendance Record (for Attendance Records tab)

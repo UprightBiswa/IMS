@@ -1,8 +1,6 @@
 import 'package:attendance_demo/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../widgets/custom_app_bar.dart';
-import '../../../../widgets/custom_drawer.dart';
 import '../../../auth/controllers/auth_controller.dart';
 import '../widgets/quick_link_section.dart';
 import '../widgets/summary_horizontal_section.dart';
@@ -16,8 +14,6 @@ class HomeView extends StatelessWidget {
     final authController = Get.find<AuthController>();
 
     return Scaffold(
-      drawer: const CustomDrawer(),
-      appBar: const CustomAppBar(isHome: true),
       body: Obx(() {
         final user = authController.currentUser.value;
         if (user == null) {
@@ -29,7 +25,7 @@ class HomeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Welcome back, Isha!",
+                "Welcome back, ${authController.currentUser.value?.name ?? 'User'}!",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,

@@ -204,28 +204,35 @@ class FacultyStudentAttendanceRecordView extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  style: TextStyle(fontSize: 12),
-                  decoration: InputDecoration(
-                    hintText: 'Search by name or roll no...',
-                    hintStyle: TextStyle(fontSize: 12),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: AppColors.greyText,
-                      size: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 0,
-                      horizontal: 10,
-                    ),
+                child: Container(
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  onChanged: controller.updateRecordSearchQuery,
+                  child: TextField(
+                    style: TextStyle(fontSize: 10),
+                    decoration: InputDecoration(
+                      hintText: 'Search by name or roll no...',
+                      hintStyle: TextStyle(fontSize: 10, color: Colors.grey),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColors.greyText,
+                        size: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 0,
+                        horizontal: 10,
+                      ),
+                    ),
+                    onChanged: controller.updateRecordSearchQuery,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),

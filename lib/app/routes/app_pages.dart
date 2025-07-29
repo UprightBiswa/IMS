@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constrants.dart';
+import '../modules/admin/attendance_management/bindings/admin_attendance_binding.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
 import '../modules/admin/leave_management/bindings/admin_leave_binding.dart';
 import '../modules/admin/leave_management/views/admin_leave_management_view.dart';
@@ -10,6 +11,7 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/student/assingment/bindings/assignment_binding.dart';
 import '../modules/student/assingment/view/assignment_create_new_tab.dart';
 import '../modules/student/assingment/view/assingment_view.dart';
+import '../modules/student/attendance/bindings/students_attendance_binding.dart';
 import '../modules/student/facialAttendance/bindings/facial_attendance_binding.dart';
 import '../modules/student/facialAttendance/views/facial_attendance_view.dart';
 import '../modules/faculty/attendance_management/bindings/faculty_attendance_binding.dart';
@@ -21,11 +23,11 @@ import '../modules/auth/views/login_view.dart';
 import '../modules/student/grades/bindings/grades_binding.dart';
 import '../modules/student/grades/view/grades_view.dart';
 import '../modules/student/help/view/help_view.dart';
-import '../modules/student/home/views/home_view.dart';
-import '../modules/student/home/bindings/home_binding.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/student/photo_upload/bindings/photo_upload_binding.dart';
+import '../modules/student/photo_upload/views/photo_upload_view.dart';
 import '../modules/student/setting/bindings/settings_binding.dart';
 import '../modules/student/setting/view/settings_view.dart';
 import '../modules/student/syllabus/bindings/syllabus_binding.dart';
@@ -60,7 +62,7 @@ class RouteProtectionMiddleware extends GetMiddleware {
 
     if (requiredRole != null && userRole != requiredRole) {
       if (userRole == 'student') {
-        return GetNavConfig.fromRoute(Routes.HOME);
+        return GetNavConfig.fromRoute(Routes.ATTENDANCE);
       } else if (userRole == 'faculty') {
         // Specific redirection for faculty
         return GetNavConfig.fromRoute(Routes.FACULTY_ATTENDANCE); // New route
@@ -100,16 +102,24 @@ class AppPages {
     ),
 
     // Student Routes
-    GetPage(
-      name: Routes.HOME,
-      page: () => HomeView(),
-      binding: HomeBinding(),
+    // GetPage(
+    //   name: Routes.HOME,
+    //   page: () => HomeView(),
+    //   binding: HomeBinding(),
+    //   middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
+    // ),
+    GetPage( // NEW ROUTE FOR PHOTO UPLOAD
+      name: Routes.PHOTO_UPLOAD,
+      page: () => PhotoUploadView(),
+      binding: PhotoUploadBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
+
 
     GetPage(
       name: Routes.ATTENDANCE,
       page: () => AttendanceMainView(),
+      binding: StudentsAttendanceBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
     GetPage(
@@ -198,10 +208,12 @@ class AppPages {
     GetPage(
       name: Routes.ADMIN_ATTENDANCE,
       page: () => AdminAttendancePage(),
+      binding: AdminAttendanceBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'admin')],
     ),
 
-     GetPage( // NEW ADMIN LEAVE MANAGEMENT ROUTE
+    GetPage(
+      // NEW ADMIN LEAVE MANAGEMENT ROUTE
       name: Routes.ADMIN_LEAVE_MANAGEMENT,
       page: () => const AdminLeaveManagementView(),
       binding: AdminLeaveBinding(),

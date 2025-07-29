@@ -117,14 +117,39 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 // Single Session Dropdown
-                Obx(() => _buildSessionDropdown(
-                      label: 'Select Session',
-                      value: controller.selectedSession.value,
-                      items: controller.todaySessions,
-                      onChanged: controller.selectSessionForMarking,
-                      hintText: 'Choose a class session',
-                    )),
+                Obx(
+                  () => _buildSessionDropdown(
+                    label: 'Select Session',
+                    value: controller.selectedSession.value,
+                    items: controller.todaySessions,
+                    onChanged: controller.selectSessionForMarking,
+                    hintText: 'Choose a class session',
+                  ),
+                ),
                 const SizedBox(height: 16),
+                //  // Pagination controls for sessions
+                // Obx(() => Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         IconButton(
+                //           icon: const Icon(Icons.arrow_back_ios, size: 16),
+                //           onPressed: controller.currentPage.value > 1
+                //               ? controller.loadPreviousPageSessions
+                //               : null,
+                //         ),
+                //         Text(
+                //           'Page ${controller.currentPage.value} of ${controller.totalPages.value}',
+                //           style: TextStyle(fontSize: 12, color: AppColors.darkText),
+                //         ),
+                //         IconButton(
+                //           icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                //           onPressed: controller.currentPage.value < controller.totalPages.value
+                //               ? controller.loadNextPageSessions
+                //               : null,
+                //         ),
+                //       ],
+                //     )),
+                // const SizedBox(height: 16),
 
                 // Filters: Course, Section, Subject, Sub-Subject
                 Obx(
@@ -151,22 +176,26 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                   ),
                 ),
 
-            Obx(() =>    _buildDropdownTile(
-                  label: 'Subject',
-                  value: controller.selectedSubject.value,
-                  items: controller.subjects,
-                  onChanged: controller.selectSubject,
-                ),),
-               Obx(() => _buildDropdownTile(
-                  label: 'Sub-Subject',
-                  value: controller.selectedSubSubject.value,
-                  items: controller.subSubjects,
-                  onChanged: controller.selectSubSubject,
-                  hintText: 'Select Sub-Subject (Optional)',
-                ),),
+                Obx(
+                  () => _buildDropdownTile(
+                    label: 'Subject',
+                    value: controller.selectedSubject.value,
+                    items: controller.subjects,
+                    onChanged: controller.selectSubject,
+                  ),
+                ),
+                Obx(
+                  () => _buildDropdownTile(
+                    label: 'Sub-Subject',
+                    value: controller.selectedSubSubject.value,
+                    items: controller.subSubjects,
+                    onChanged: controller.selectSubSubject,
+                    hintText: 'Select Sub-Subject (Optional)',
+                  ),
+                ),
                 const SizedBox(height: 16),
 
-                 // Display selected session details
+                // Display selected session details
                 Obx(() {
                   final session = controller.selectedSession.value;
                   if (session != null) {
@@ -175,13 +204,56 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Selected Session Details:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[700])),
-                          Text('Course: ${session.displayCourse}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                          Text('Section: ${session.displaySection}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                          Text('Subject: ${session.displaySubject}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                          Text('Time: ${session.displayTime}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                          Text('Session ID: ${session.sessionId}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
-                          Text('Marking Status: ${session.markingStatus.replaceAll('_', ' ').capitalizeFirst}', style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          Text(
+                            'Selected Session Details:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            'Course: ${session.displayCourse}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Section: ${session.displaySection}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Subject: ${session.displaySubject}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Time: ${session.displayTime}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Session ID: ${session.sessionId}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Marking Status: ${session.markingStatus.replaceAll('_', ' ').capitalizeFirst}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
                         ],
                       ),
                     );
@@ -192,7 +264,7 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                  onPressed: controller.selectedSession.value == null
+                    onPressed: controller.selectedSession.value == null
                         ? null // Disable if no session is selected
                         : () {
                             Get.to(() => StudentDashboardUploadImage());
@@ -217,11 +289,16 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                 Obx(
                   () => Row(
                     children: [
-                      Switch(
-                        padding: EdgeInsets.zero,
-                        value: controller.showPreviousAttendance.value,
-                        onChanged: controller.toggleShowPreviousAttendance,
-                        activeColor: AppColors.primaryBlue,
+                      Transform.scale(
+                        scale: 0.6, // Shrink toggle as per Figma suggestion
+                        child: Switch(
+                          padding: EdgeInsets.zero,
+                          value: controller.showPreviousAttendance.value,
+                          onChanged: controller.toggleShowPreviousAttendance,
+                          activeColor: AppColors.primaryBlue,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
                       SizedBox(width: 4),
                       Expanded(
@@ -235,7 +312,6 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 4),
                       TextButton(
                         onPressed: () {
                           print('View History tapped');
@@ -271,31 +347,40 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        style: TextStyle(fontSize: 10),
-                        decoration: InputDecoration(
-                          hintText: 'Search by name or roll no...',
-                          hintStyle: TextStyle(fontSize: 10),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: AppColors.greyText,
-                            size: 14,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-
-                          fillColor: Colors.grey[100],
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 0,
-                            horizontal: 10,
-                          ),
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        onChanged: (value) {
-                          // Implement search filtering
-                        },
+                        child: TextField(
+                          style: TextStyle(fontSize: 10),
+                          decoration: InputDecoration(
+                            hintText: 'Search by name or roll no...',
+                            hintStyle: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.greyText,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: AppColors.greyText,
+                              size: 14,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0,
+                              horizontal: 10,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            // Implement search filtering
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -304,7 +389,7 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                         print('Filter tapped');
                       },
                       icon: const Icon(
-                        Icons.filter_list,
+                        Icons.filter_alt_outlined,
                         color: Colors.black,
                         size: 18,
                       ),
@@ -326,7 +411,7 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                 ),
                 //row with 2componts mark all present reset,
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     OutlinedButton(
                       style: ElevatedButton.styleFrom(
@@ -537,7 +622,7 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
     );
   }
 
-   // Updated dropdown for SessionForMarkingModel
+  // Updated dropdown for SessionForMarkingModel
   Widget _buildSessionDropdown({
     required String label,
     required SessionForMarkingModel? value,
@@ -574,10 +659,7 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
                     value: item,
                     child: Text(
                       item.displayString, // Use the new displayString
-                      style: TextStyle(
-                        color: AppColors.darkText,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: AppColors.darkText, fontSize: 12),
                     ),
                   );
                 }).toList(),
@@ -589,7 +671,6 @@ class FacultyStudentAttendanceMarkView extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildDropdownTile({
     required String label,
