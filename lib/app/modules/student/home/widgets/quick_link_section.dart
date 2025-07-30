@@ -43,10 +43,12 @@ class QuickLinksSection extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFFEFEFE),
-                      border: Border.all(
-                        color: Color(0xFF343333).withValues(alpha: .30),
-                      ),
+                      color: Color(0xFFF7F9FA),
+                      border: Border.all(color: Color(0xFFEDF1F4), width: 1.07),
+                      // color: Color(0xFFFEFEFE),
+                      // border: Border.all(
+                      //   color: Color(0xFF343333).withValues(alpha: .30),
+                      // ),
                     ),
                     padding: const EdgeInsets.all(10),
                     child: Column(
@@ -54,8 +56,8 @@ class QuickLinksSection extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: Colors.blue.withValues(alpha: .10),
-                          child: Icon(item.icon, size: 20, color: Colors.black),
+                          backgroundColor: Colors.blue,
+                          child: Icon(item.icon, size: 20, color: Colors.white),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -63,10 +65,10 @@ class QuickLinksSection extends StatelessWidget {
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF96969B),
+                            color: Color(0xFF000000).withValues(alpha: .50),
                           ),
                         ),
                       ],

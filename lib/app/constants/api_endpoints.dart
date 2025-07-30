@@ -7,6 +7,8 @@ class ApiEndpoints {
 
   static const String UPLOAD_PHOTO =
       '$BASE_URL/attendance/student/upload_photo';
+  static const String GET_PHOTO_FOR_STUDENT =
+      '/api/v1/attendance/student/get_photo'; // New endpoint
 
   // Student Attendance Dashboard API
   static const String STUDENT_ATTENDANCE_DASHBOARD =

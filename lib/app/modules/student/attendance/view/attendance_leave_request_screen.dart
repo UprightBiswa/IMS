@@ -1,3 +1,4 @@
+import 'package:attendance_demo/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -98,25 +99,25 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
               const Text(
                 'Leave Requests',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
               ),
-              OutlinedButton.icon(
+              ElevatedButton.icon(
                 onPressed: () {
                   _controller
                       .resetApplyLeaveForm(); // Reset form before navigating
                   Get.to(() => const ApplyLeaveScreen());
                 },
-                icon: const Icon(Icons.add, size: 18),
+                icon: const Icon(Icons.add_circle_outline, size: 18),
                 label: const Text(
                   'Apply for Leave',
                   style: TextStyle(fontSize: 12),
                 ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.grey[700],
-                  side: BorderSide(color: Colors.grey[400]!),
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primaryBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -132,13 +133,12 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
 
           // Segmented Control (Tabs)
           Container(
-            padding: const EdgeInsets.all(4),
+            height: 30,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Color(0xFFF7F9FA),
               borderRadius: BorderRadius.circular(16.0),
             ),
             child: Row(
-              spacing: 10,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
@@ -247,17 +247,16 @@ class _LeaveRequestsScreenState extends State<LeaveRequestsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected ? AppColors.primaryBlue : Colors.transparent,
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Center(
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[700],
+              fontSize: 12,
+              color: isSelected ? Colors.white : Colors.black,
               fontWeight: FontWeight.normal,
             ),
           ),

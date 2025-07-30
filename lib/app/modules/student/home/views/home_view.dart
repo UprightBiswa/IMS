@@ -14,6 +14,7 @@ class HomeView extends StatelessWidget {
     final authController = Get.find<AuthController>();
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundGray,
       body: Obx(() {
         final user = authController.currentUser.value;
         if (user == null) {

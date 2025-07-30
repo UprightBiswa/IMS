@@ -13,6 +13,8 @@ class CustomDrawer extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    final ProfileController profileController = Get.put(ProfileController());
+
     return Obx(() {
       return Drawer(
         child: Container(
@@ -27,15 +29,40 @@ class CustomDrawer extends GetView<ProfileController> {
                   onTap: onProfileTap,
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundImage: controller.userPhotoUrl.isNotEmpty
-                            ? NetworkImage(controller.userPhotoUrl)
-                            : null,
-                        child: controller.userPhotoUrl.isEmpty
-                            ? const Icon(Icons.person, size: 16)
-                            : null,
-                      ),
+                      // CircleAvatar(
+                      //   radius: 24,
+                      //   backgroundImage: controller.userPhotoUrl.isNotEmpty
+                      //       ? NetworkImage(controller.userPhotoUrl)
+                      //       : null,
+                      //   child: controller.userPhotoUrl.isEmpty
+                      //       ? const Icon(Icons.person, size: 16)
+                      //       : null,
+                      // ),
+                      Obx(() {
+                        if (profileController.isFetchingImage.value) {
+                          return const CircleAvatar(
+                            radius: 24,
+                            child:
+                                CircularProgressIndicator(), // Show loading indicator
+                          );
+                        } else if (profileController.profileImageBytes.value !=
+                            null) {
+                          return CircleAvatar(
+                            radius: 24,
+                            backgroundImage: MemoryImage(
+                              profileController.profileImageBytes.value!,
+                            ), // Use MemoryImage
+                          );
+                        } else {
+                          return const CircleAvatar(
+                            radius: 24,
+                            child: Icon(
+                              Icons.person,
+                              size: 24,
+                            ), // Placeholder icon
+                          );
+                        }
+                      }),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +76,10 @@ class CustomDrawer extends GetView<ProfileController> {
                           ),
                           Text(
                             'Btech-123',
-                            style: TextStyle(color: Colors.white70, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -62,12 +92,18 @@ class CustomDrawer extends GetView<ProfileController> {
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
                 const SizedBox(height: 16),
-            
+
                 // Main Items
                 _drawerItem('Home', () => Get.offAllNamed(Routes.ATTENDANCE)),
-                _drawerItem('Attendance', () => Get.offAllNamed(Routes.ATTENDANCE)),
+                _drawerItem(
+                  'Attendance',
+                  () => Get.offAllNamed(Routes.ATTENDANCE),
+                ),
                 _drawerItem('Timetable', () => Get.toNamed(Routes.TIMETABLE)),
-                _drawerItem('Assignments', () => Get.toNamed(Routes.ASSIGNMENTS)),
+                _drawerItem(
+                  'Assignments',
+                  () => Get.toNamed(Routes.ASSIGNMENTS),
+                ),
                 _drawerItem('Announcement', () => Get.toNamed(Routes.MESSAGES)),
                 _drawerItem('Syllabus', () => Get.toNamed(Routes.SYLLABUS)),
                 _drawerItem('Library', () => Get.toNamed(Routes.LIBRARY)),
@@ -77,9 +113,9 @@ class CustomDrawer extends GetView<ProfileController> {
                   'Faculty',
                   () => Get.toNamed(Routes.FACULTY_ATTENDANCE),
                 ),
-            
+
                 const Divider(color: Colors.white54, height: 32),
-            
+
                 const Text(
                   'ADDITIONAL OPTIONS',
                   style: TextStyle(color: Colors.white70, fontSize: 12),

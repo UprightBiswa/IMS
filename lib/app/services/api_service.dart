@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:attendance_demo/app/services/dio_interceptor.dart';
@@ -167,6 +169,35 @@ class ApiService {
         onReceiveProgress: onReceiveProgress,
       );
       return response;
+    } on DioException catch (e) {
+      _handleDioError(e);
+      rethrow;
+    }
+  }
+
+  // NEW: Method to get raw bytes for an image
+  Future<Uint8List> getBytes(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    try {
+      final response = await _dio.get<List<int>>(
+        path,
+        queryParameters: queryParameters,
+        options: (options ?? Options()).copyWith(
+          responseType: ResponseType.bytes, // Important: ask for bytes
+        ),
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
+      if (response.data != null) {
+        return Uint8List.fromList(response.data!);
+      } else {
+        throw Exception("No image data received for path: $path");
+      }
     } on DioException catch (e) {
       _handleDioError(e);
       rethrow;

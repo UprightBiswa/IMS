@@ -100,6 +100,7 @@ class SummaryPersentage extends StatelessWidget {
           child: CircularProgressIndicator(
             value: value / 100, // 82%
             strokeWidth: 6,
+           
             backgroundColor: Colors.grey.shade200,
             valueColor: AlwaysStoppedAnimation<Color>(
               value >= 75 ? AppColors.primaryBlue : AppColors.accentRed,
@@ -120,7 +121,7 @@ class SummaryPersentage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  value >= 75 ? 'Good' : 'Needs Attention',
+                  value >= 75 ? 'Good' : 'Needs\nAttention',
                   style: TextStyle(
                     color: value >= 75
                         ? AppColors.primaryBlue

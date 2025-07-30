@@ -450,14 +450,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../widgets/custom_app_bar.dart';
-import '../../../../widgets/custom_drawer.dart';
 import '../../home/views/home_view.dart';
 import '../controllers/attendance_tab_controller.dart';
 import 'attendance_calendar_screen.dart';
 import 'attendance_leave_request_screen.dart';
 import 'attendance_overview_screen.dart';
-
-// Import the CurvedNavigationBar package
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class AttendanceMainView extends StatelessWidget {
@@ -471,7 +468,6 @@ class AttendanceMainView extends StatelessWidget {
     AttendanceLeaveTab(),
   ];
 
-  // Define both outlined and filled versions of icons
   final List<IconData> outlinedIcons = const [
     Icons.home_outlined,
     Icons.bar_chart_outlined, // For Attendance/Overview
@@ -491,13 +487,14 @@ class AttendanceMainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const CustomDrawer(),
+      // drawer: const CustomDrawer(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(() {
           final isHome = controller.selectedTabIndex.value == 0;
           return CustomAppBar(
             isHome: isHome,
+            showDrawerIcon: false,
             title: isHome ? '' : 'Attendance Management',
           );
         }),
@@ -514,12 +511,8 @@ class AttendanceMainView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  // Choose outlined or filled icon based on selection state
                   isSelected ? filledIcons[index] : outlinedIcons[index],
                   size: 24, // Consistent size for all icons
-                  // Icon color for items in the main bar (unselected).
-                  // The icon for the *selected* tab, which goes into the floating circle,
-                  // will have its color defined here to be white.
                   color: isSelected
                       ? Colors.white
                       : Colors
@@ -537,12 +530,8 @@ class AttendanceMainView extends StatelessWidget {
               ],
             );
           }),
-          color: const Color(
-            0xFF00204A,
-          ), // Background color of the main bar (deep blue)
-          buttonBackgroundColor: const Color(
-            0xFF00204A,
-          ), // Floating circle color is also deep blue
+          color: const Color(0xFF00204A),
+          buttonBackgroundColor: const Color(0xFF1A73E8),
           backgroundColor: Colors
               .transparent, // Important for seamless curve cutout against Scaffold background
           animationCurve: Curves.easeInOut,

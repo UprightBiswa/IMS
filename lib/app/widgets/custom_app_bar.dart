@@ -9,8 +9,14 @@ class CustomAppBar extends GetView<ProfileController>
     implements PreferredSizeWidget {
   final String? title;
   final bool isHome;
+  final bool showDrawerIcon;
 
-  const CustomAppBar({super.key, this.title, this.isHome = false});
+  const CustomAppBar({
+    super.key,
+    this.title,
+    this.isHome = false,
+    this.showDrawerIcon = true,
+  });
 
   void onMenuTap(BuildContext context) {
     Scaffold.of(context).openDrawer();
@@ -32,10 +38,12 @@ class CustomAppBar extends GetView<ProfileController>
 
   @override
   Widget build(BuildContext context) {
+    final ProfileController profileController = Get.put(ProfileController());
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: isHome ? AppColors.backgroundGray : Colors.white,
-      titleSpacing: 0,
+      // titleSpacing: 0,
       title: isHome ? null : Text(title ?? ''),
       actions: [
         IconButton(
@@ -50,26 +58,48 @@ class CustomAppBar extends GetView<ProfileController>
           onTap: onProfileTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Obx(
-              () => CircleAvatar(
-                radius: 16,
-                backgroundImage: controller.userPhotoUrl.isNotEmpty
-                    ? NetworkImage(controller.userPhotoUrl)
-                    : null,
-                child: controller.userPhotoUrl.isEmpty
-                    ? const Icon(Icons.person, size: 16)
-                    : null,
-              ),
-            ),
+            child: Obx(() {
+              if (profileController.isFetchingImage.value) {
+                return const CircleAvatar(
+                  radius: 16,
+                  child: CircularProgressIndicator(), // Show loading indicator
+                );
+              } else if (profileController.profileImageBytes.value != null) {
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: MemoryImage(
+                    profileController.profileImageBytes.value!,
+                  ), // Use MemoryImage
+                );
+              } else {
+                return const CircleAvatar(
+                  radius: 16,
+                  child: Icon(Icons.person, size: 16), // Placeholder icon
+                );
+              }
+            }),
+            // child: Obx(
+            //   () => CircleAvatar(
+            //     radius: 16,
+            //     backgroundImage: controller.userPhotoUrl.isNotEmpty
+            //         ? NetworkImage(controller.userPhotoUrl)
+            //         : null,
+            //     child: controller.userPhotoUrl.isEmpty
+            //         ? const Icon(Icons.person, size: 16)
+            //         : null,
+            //   ),
+            // ),
           ),
         ),
       ],
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () => onMenuTap(context),
-        ),
-      ),
+      leading: showDrawerIcon
+          ? Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: Colors.black),
+                onPressed: () => onMenuTap(context),
+              ),
+            )
+          : null,
     );
   }
 

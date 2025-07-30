@@ -51,7 +51,7 @@ class QuickLinkController extends GetxController {
       ),
       QuickLinkModel(
         title: "Fees",
-        icon: Icons.attach_money_outlined,
+        icon: Icons.currency_rupee_outlined,
         route: Routes.FEES,
       ),
       QuickLinkModel(

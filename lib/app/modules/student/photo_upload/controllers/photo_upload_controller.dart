@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import '../../../../constants/api_endpoints.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../services/api_service.dart';
-import '../../../auth/controllers/auth_controller.dart'; // For snackbar
+import '../../../auth/controllers/auth_controller.dart';
+import '../../../profile/controllers/profile_controller.dart'; // For snackbar
 
 enum PhotoUploadStatus { initial, selected, uploaded, error }
 
 class PhotoUploadController extends GetxController {
   final AuthController _authController = Get.find<AuthController>();
+  final ProfileController profileController = Get.find<ProfileController>();
   final ApiService _apiService = ApiService();
 
   Rxn<XFile> selectedImage = Rxn<XFile>();
@@ -96,6 +98,9 @@ class PhotoUploadController extends GetxController {
         // Update user model and SharedPreferences
         await _authController.updatePhotoUploadStatus("Uploaded");
         photoUploadStatus.value = PhotoUploadStatus.uploaded;
+
+        // ✅ Fetch image immediately after upload
+        await profileController.fetchProfileImage();
 
         Get.back(); // Dismiss dialog
         Get.snackbar(
