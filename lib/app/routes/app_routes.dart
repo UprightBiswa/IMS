@@ -6,7 +6,6 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
 
   // Student Routes
-  // static const HOME = _Paths.HOME;
   static const PHOTO_UPLOAD = _Paths.PHOTO_UPLOAD;
   static const ATTENDANCE = _Paths.ATTENDANCE;
   static const SYLLABUS = _Paths.SYLLABUS;
@@ -28,10 +27,16 @@ abstract class Routes {
   static const ABOUT_APP = _Paths.ABOUT_APP;
   static const HELP = _Paths.HELP;
 
+
+
   // Admin Routes
+  static const ADMIN_DASHBOARD = _Paths.ADMIN_DASHBOARD;
   static const ADMIN_ATTENDANCE = _Paths.ADMIN_ATTENDANCE;
-  static const ADMIN_LEAVE_MANAGEMENT =
-      _Paths.ADMIN_LEAVE_MANAGEMENT; // NEW ROUTE
+  static const ADMIN_LEAVE_MANAGEMENT = _Paths.ADMIN_LEAVE_MANAGEMENT;
+  static const ADMIN_STUDENT_DASHBOARD = _Paths.ADMIN_STUDENT_DASHBOARD;
+  static const ADMIN_ADD_NEW_STUDENT = _Paths.ADMIN_ADD_NEW_STUDENT;
+
+
 
   // Faculty Routes
   static const FACULTY_ATTENDANCE = _Paths.FACULTY_ATTENDANCE;
@@ -45,7 +50,6 @@ abstract class _Paths {
   static const PROFILE = '/profile';
 
   //student
-  // static const HOME = '/home';
   static const PHOTO_UPLOAD = '/photo-upload';
   static const ATTENDANCE = '/attendance';
   static const SYLLABUS = '/syllabus';
@@ -68,10 +72,12 @@ abstract class _Paths {
   static const HELP = '/help';
 
   //admin
+  static const ADMIN_DASHBOARD = '/admin-dashboard';
   static const ADMIN_ATTENDANCE = '/admin-attendance';
   static const ADMIN_LEAVE_MANAGEMENT = '/admin-leave-management'; // NEW ROUTE
+  static const ADMIN_STUDENT_DASHBOARD = '/admin-student-dashboard';
+  static const ADMIN_ADD_NEW_STUDENT = '/admin-add-new-student';
 
   //faculty
   static const FACULTY_ATTENDANCE = '/faculty-attendance';
-
 }

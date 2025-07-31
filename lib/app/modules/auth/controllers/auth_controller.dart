@@ -136,7 +136,7 @@ class AuthController extends GetxController {
         Get.offAllNamed(Routes.FACULTY_ATTENDANCE);
         break;
       case 'admin':
-        Get.offAllNamed(Routes.ADMIN_ATTENDANCE);
+        Get.offAllNamed(Routes.ADMIN_DASHBOARD);
         break;
       default:
         Get.snackbar(

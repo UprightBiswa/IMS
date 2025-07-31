@@ -1,14 +1,12 @@
 class ApiEndpoints {
-  static const String BASE_URL = '/api/v1';
-
   static const String LOGIN = '/api/v1/auth/login';
+  static const String registerUser = '/api/v1/auth/register';
   static const String REFRESH_TOKEN = '/auth/refresh-token';
   static const String PROFILE = '/api/v1/profile';
 
-  static const String UPLOAD_PHOTO =
-      '$BASE_URL/attendance/student/upload_photo';
+  static const String UPLOAD_PHOTO = '/api/v1/attendance/student/upload_photo';
   static const String GET_PHOTO_FOR_STUDENT =
-      '/api/v1/attendance/student/get_photo'; // New endpoint
+      '/api/v1/attendance/student/get_photo';
 
   // Student Attendance Dashboard API
   static const String STUDENT_ATTENDANCE_DASHBOARD =
@@ -37,6 +35,25 @@ class ApiEndpoints {
   static const String ADMIN_DASHBOARD_STUDENT_MAPP_3 =
       '/api/v1/attendance/dashboard/admin/student/classwise';
 
+  // Department Endpoints
+  static const String departments = '/api/v1/departments';
+
+  static String semestersByDepartment(int departmentId) {
+    print('/api/v1/semesters/department/$departmentId');
+    return '/api/v1/semesters/department/$departmentId';
+  }  // Ideal endpoint (if it exists)
+  static const String allSemesters = '/api/v1/semesters'; // Fallback if semestersByDepartment doesn't exist
+  static String semesterDetails(int semesterId) => '/semesters/$semesterId/department'; // To get details of a specific semester including department
+
+  // Course Endpoints
+  static String coursesBySemester(int semesterId) => '/api/v1/courses/semester/$semesterId';
+
+  // Student Endpoints
+  static const String createStudent = '/api/v1/attendance/students';
+
+  // Course Enrollment Endpoints
+  static const String enrollments = '/api/v1/attendance/enrollments';
+
   // Faculty dashboard endpoints
   static const String FACULTY_ATTENDANCE_MAPP =
       '/api/v1/attendance/dashboard/faculty/attendance_mapp';
@@ -56,6 +73,7 @@ class ApiEndpoints {
       '/api/v1/attendance/dashboard/faculty/attendance_marking_status/$uuid';
   static const String FACULTY_START_ATTENDANCE_MARKING =
       '/api/v1/attendance/dashboard/faculty/start_attendance_marking';
+
 
   // NEW Faculty Check-in/Log Endpoints (PLACEHOLDERS)
   static const String FACULTY_CHECK_IN = '/api/v1/attendance/faculty/check_in';

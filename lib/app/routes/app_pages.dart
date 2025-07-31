@@ -3,10 +3,14 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constrants.dart';
+import '../modules/admin/admin_dashboard_view.dart';
 import '../modules/admin/attendance_management/bindings/admin_attendance_binding.dart';
 import '../modules/admin/attendance_management/views/admin_attendance_page.dart'; // Ensure correct path
 import '../modules/admin/leave_management/bindings/admin_leave_binding.dart';
 import '../modules/admin/leave_management/views/admin_leave_management_view.dart';
+import '../modules/admin/student_enrollment_management/bindings/student_registration_binding.dart';
+import '../modules/admin/student_enrollment_management/views/add_new_student_view.dart';
+import '../modules/admin/student_enrollment_management/views/student_registration_dashboard_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/student/assingment/bindings/assignment_binding.dart';
 import '../modules/student/assingment/view/assignment_create_new_tab.dart';
@@ -67,7 +71,7 @@ class RouteProtectionMiddleware extends GetMiddleware {
         // Specific redirection for faculty
         return GetNavConfig.fromRoute(Routes.FACULTY_ATTENDANCE); // New route
       } else if (userRole == 'admin') {
-        return GetNavConfig.fromRoute(Routes.ADMIN_ATTENDANCE);
+        return GetNavConfig.fromRoute(Routes.ADMIN_DASHBOARD);
       }
       return GetNavConfig.fromRoute(Routes.LOGIN);
     }
@@ -108,13 +112,13 @@ class AppPages {
     //   binding: HomeBinding(),
     //   middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     // ),
-    GetPage( // NEW ROUTE FOR PHOTO UPLOAD
+    GetPage(
+      // NEW ROUTE FOR PHOTO UPLOAD
       name: Routes.PHOTO_UPLOAD,
       page: () => PhotoUploadView(),
       binding: PhotoUploadBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'student')],
     ),
-
 
     GetPage(
       name: Routes.ATTENDANCE,
@@ -206,6 +210,13 @@ class AppPages {
 
     // Admin Routes
     GetPage(
+      name: Routes.ADMIN_DASHBOARD,
+      page: () => AdminDashboardView(),
+      binding: AdminAttendanceBinding(),
+      middlewares: [RouteProtectionMiddleware(requiredRole: 'admin')],
+    ),
+
+    GetPage(
       name: Routes.ADMIN_ATTENDANCE,
       page: () => AdminAttendancePage(),
       binding: AdminAttendanceBinding(),
@@ -213,11 +224,21 @@ class AppPages {
     ),
 
     GetPage(
-      // NEW ADMIN LEAVE MANAGEMENT ROUTE
       name: Routes.ADMIN_LEAVE_MANAGEMENT,
       page: () => const AdminLeaveManagementView(),
       binding: AdminLeaveBinding(),
       middlewares: [RouteProtectionMiddleware(requiredRole: 'admin')],
+    ),
+
+    GetPage(
+      name: Routes.ADMIN_STUDENT_DASHBOARD,
+      page: () => const StudentRegistrationDashboardView(),
+      binding: StudentRegistrationBinding(),
+    ),
+
+    GetPage(
+      name: Routes.ADMIN_ADD_NEW_STUDENT,
+      page: () => const AddNewStudentView(), // You create this next
     ),
 
     // Faculty Routes (NEW)

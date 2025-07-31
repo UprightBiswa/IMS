@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../theme/app_colors.dart';
+import '../../../../widgets/custom_app_bar.dart';
 import '../controllers/admin_leave_controller.dart';
 import 'admin_leave_request_card.dart';
 import 'admin_leave_summary_card.dart';
@@ -17,12 +18,9 @@ class AdminLeaveManagementView extends GetView<AdminLeaveController> {
     final ScrollController scrollController = controller.scrollController;
     return Scaffold(
       backgroundColor: AppColors.backgroundGray,
-      appBar: AppBar(
-        title: const Text('Leave Management'),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textBlack,
-        elevation: 0.5,
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: 'Leave Management',
+        showDrawerIcon: false,
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
